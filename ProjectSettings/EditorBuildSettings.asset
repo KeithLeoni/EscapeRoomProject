@@ -5,11 +5,17 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Samples/Ubiq/1.0.0-pre.16/Demo (XRI)/Demo.unity
+    guid: 2de505d34345ab340bdde30d419b24eb
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: d56859327a1a5574fab414e9133ac285, type: 2}
     WebXR.Settings: {fileID: 11400000, guid: b7b3adac5772bbc449e5b9121966804a, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 7e3be9e9a9459f44aa9d64f9cd40ae6c, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 94aeb0663cec5f044a86fa9700c412ff, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 126e71bb910648749bc656e3d9bf8d3f, type: 2}
   m_UseUCBPForAssetBundles: 0
