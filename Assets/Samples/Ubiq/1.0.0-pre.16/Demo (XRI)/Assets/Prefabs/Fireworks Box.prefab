@@ -141,6 +141,11 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -162,9 +167,11 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &3240370694413710568
 BoxCollider:
@@ -355,8 +362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65bef7ee9c2e709449d2e7e439595f7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireworkPrefab: {fileID: 4511263541971767917, guid: 87221b841a51c2840bc5648fa3be6dfe,
-    type: 3}
+  fireworkPrefab: {fileID: 4511263541971767917, guid: 87221b841a51c2840bc5648fa3be6dfe, type: 3}
 --- !u!114 &6422948690798026994
 MonoBehaviour:
   m_ObjectHideFlags: 0
