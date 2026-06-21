@@ -25,7 +25,7 @@ public class OpenDoorScript : MonoBehaviour
         OpenDoor();
     }
 
-    private void OpenDoor()
+    public void OpenDoor()
     {
         transform.Rotate(0f, -90f, 0f, Space.Self);
 

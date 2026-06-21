@@ -1,16 +1,13 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class PullLeverScript : MonoBehaviour
+
+public class GrateScript : MonoBehaviour
 {
-    
-    private Transform t;
-    private GameObject lever;
-    private GameObject doorPivot;
+    private GameObject grate;
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grab;
     private void Start()
     {
-        doorPivot = GameObject.Find("DoorPivot");
         grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         grab.selectEntered.AddListener(XRGrabInteractable_Activated);
     }
@@ -26,27 +23,18 @@ public class PullLeverScript : MonoBehaviour
 
     private void XRGrabInteractable_Activated(SelectEnterEventArgs eventArgs)
     {
-        PullLeverDown();
+        OpenGrate();
     }
 
-    private void PullLeverDown()
+    public void OpenGrate()
     {
-        transform.Rotate(160f, 0f, 0f, Space.Self);
+        transform.Rotate(90f, 0f, 0f, Space.Self);
 
         if (grab != null)
         {
             grab.enabled = false;
         }
-
-        if (doorPivot != null)
-        {
-            var doorScript = doorPivot.GetComponent<OpenDoorScript>(); 
-            
-            if (doorScript != null)
-            {
-                doorScript.OpenDoor(); 
-            }
-        }
     }
 
 }
+
