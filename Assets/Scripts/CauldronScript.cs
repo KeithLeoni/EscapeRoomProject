@@ -3,7 +3,7 @@ using UnityEngine;
 public class CauldronScript : MonoBehaviour
 {
     // Potion ingredients
-    private bool potionGreen, potionRed, ivyLeaf = false;    
+    private bool potionGreen, potionRed, ivyLeaf;    
     public GameObject magicInkPrefab;
     [SerializeField] private float spawnHeightOffset = 0.5f; // y offset
     private GameObject magicInk;
