@@ -1,8 +1,6 @@
-using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 /// <summary>
@@ -33,22 +31,22 @@ public class SocketElement : MonoBehaviour
         {
             // This is a socket interactor object
             _outlineComponent.OutlineColor = Color.gold;
-            _socketInteractor.hoverEntered.AddListener(enableHighlight);
-            _socketInteractor.hoverExited.AddListener(disableHighlight);
-            _socketInteractor.selectEntered.AddListener(onSnap);
-            _socketInteractor.selectExited.AddListener(onDeselect);
+            _socketInteractor.hoverEntered.AddListener(EnableHighlight);
+            _socketInteractor.hoverExited.AddListener(DisableHighlight);
+            _socketInteractor.selectEntered.AddListener(OnSnap);
+            _socketInteractor.selectExited.AddListener(OnDeselect);
             // Add socket tracker status
             socketTracker = gameObject.AddComponent<SocketStatusTracker>();
         }
 
     }
 
-    public void enableHighlight(HoverEnterEventArgs args)
+    public void EnableHighlight(HoverEnterEventArgs args)
     {
         _outlineComponent.enabled = true;
     }
 
-    public void disableHighlight(HoverExitEventArgs args)
+    public void DisableHighlight(HoverExitEventArgs args)
     {
         _outlineComponent.enabled = false;
     }
@@ -57,10 +55,10 @@ public class SocketElement : MonoBehaviour
     /// When objects enter snapping zone (i.e are selected) <see langword="this"/> function
     /// updates socket status <see langword="and"/> optionally calls the given onSocketSnap method  
     /// </summary>
-    public void onSnap(SelectEnterEventArgs args)
+    public void OnSnap(SelectEnterEventArgs args)
     {
         // Update socket tracker
-        socketTracker.setSocketStatus(true);
+        socketTracker.SetSocketStatus(true);
         // Disable socket
         _socketInteractor.hoverEntered.RemoveAllListeners();
         _socketInteractor.hoverExited.RemoveAllListeners();
@@ -68,10 +66,10 @@ public class SocketElement : MonoBehaviour
         onSocketSnap?.Invoke();
     }
 
-    public void onDeselect(SelectExitEventArgs args)
+    public void OnDeselect(SelectExitEventArgs args)
     {
         // Update socket tracker
-        socketTracker.setSocketStatus(false);
+        socketTracker.SetSocketStatus(false);
     }
 
 }

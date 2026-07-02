@@ -3,7 +3,6 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Movement;
 
-// Attach this to your XR Origin (or XR Rig) GameObject
 /// <summary>
 /// Create an empty <see langword="object"/> <see langword="and"/> <see langword="add"/> <see langword="this"/>
 /// component to create a locomotion flying system. Add the <see langword="object"/> under the Locomotion <see langword="object"/>

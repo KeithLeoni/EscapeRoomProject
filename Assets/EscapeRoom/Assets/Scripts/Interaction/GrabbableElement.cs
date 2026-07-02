@@ -1,10 +1,7 @@
-using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
-using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using Ubiq.Messaging;
-using Ubiq.Geometry;
 
 /// <summary>
 /// Component to <see langword="add"/> to XR grabbabble <see langword="object"/> to 
@@ -49,11 +46,11 @@ public class GrabbableElement : MonoBehaviour
             }
             int oldLayerMask = grabInteractable.interactionLayers.value;
             grabInteractable.interactionLayers = oldLayerMask | grabLayer;
-            grabInteractable.hoverEntered.AddListener(enableHighlight);
-            grabInteractable.hoverExited.AddListener(disableHighlight);
+            grabInteractable.hoverEntered.AddListener(EnableHighlight);
+            grabInteractable.hoverExited.AddListener(DisableHighlight);
             // Network Management
-            grabInteractable.selectEntered.AddListener(onSelect);
-            grabInteractable.selectExited.AddListener(onDeselect);
+            grabInteractable.selectEntered.AddListener(OnSelect);
+            grabInteractable.selectExited.AddListener(OnDeselect);
 
         }
 
@@ -94,24 +91,24 @@ public class GrabbableElement : MonoBehaviour
     /// <summary>
     /// Enable Outline highlight when hovering  
     /// </summary>
-    public void enableHighlight(HoverEnterEventArgs args)
+    public void EnableHighlight(HoverEnterEventArgs args)
     {
         _outlineComponent.enabled = true;
     }
     /// <summary>
     /// Disable Outline highlight when exiting hover state 
     /// </summary>
-    public void disableHighlight(HoverExitEventArgs args)
+    public void DisableHighlight(HoverExitEventArgs args)
     {
         _outlineComponent.enabled = false;
     }
 
     // ------------------------------------------------------------------------------------
     // Network sync management
-    private void onSelect(SelectEnterEventArgs args)
+    private void OnSelect(SelectEnterEventArgs args)
     {
         // Only track if Grab was not triggered due to Socket interaction
-        if (socketElement != null && socketElement.socketTracker.isSocketActivated())
+        if (socketElement != null && socketElement.socketTracker.IsSocketActivated())
         {
             return;
         }
@@ -119,7 +116,7 @@ public class GrabbableElement : MonoBehaviour
         owner = true;
     }
 
-    private void onDeselect(SelectExitEventArgs args)
+    private void OnDeselect(SelectExitEventArgs args)
     {
         _waitForFall = true;
     }

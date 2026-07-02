@@ -3,22 +3,21 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-/* Chest Behaviour:
- * - tracks contact with key
- * - plays lid opening animation
- * */
+/// <summary>
+/// Chest behaviour that plays opening lid animation when key is put in lock   
+/// </summary>
 public class Chest : MonoBehaviour
 {
     // It is an interactable component, that interacts with key to open
-    private GameObject lockObject;
-    private GameObject chestLidObject;
+    private GameObject _lockObject;
+    private GameObject _chestLidObject;
     // Chest opening variables
-    private Vector3 rotationPoint;
-    private Quaternion finalRotationTarget;
-    private float angularSpeed = -100f;
+    private Vector3 _rotationPoint;
+    private Quaternion _finalRotationTarget;
+    private float _angularSpeed = -100f;
     // Used as fail safe in case of lag
-    private float prevDiff = 240f;
-    private bool isOpening;
+    private float _prevDiff = 240f;
+    private bool _isOpening;
     [Header("Key object the lock interacts with")]
     [Space]
     public GameObject keyObject;
@@ -26,51 +25,57 @@ public class Chest : MonoBehaviour
     void Start()
     {
         // Get Lock
-        lockObject = gameObject.GetNamedChild("Lock");
-        chestLidObject = gameObject.GetNamedChild("Chest_Lid");
-        rotationPoint = gameObject.transform.position;
-        rotationPoint.y += 0.421f;
-        rotationPoint.z -= 0.263f;
-        finalRotationTarget = Quaternion.Euler(240f, 0, 0);
-        isOpening = false;
+        _lockObject = gameObject.GetNamedChild("Lock");
+        _chestLidObject = gameObject.GetNamedChild("Chest_Lid");
+        _rotationPoint = gameObject.GetNamedChild("PivotPoint").transform.position;
+        _finalRotationTarget = Quaternion.Euler(240f, 0, 0);
+        _isOpening = false;
     }
 
     void Update()
     {
-        if (isOpening)
+        if (_isOpening)
         {
             // Animate chest opening
-            float angleDiff = Quaternion.Angle(chestLidObject.transform.rotation, finalRotationTarget);
+            float angleDiff = Quaternion.Angle(_chestLidObject.transform.rotation, _finalRotationTarget);
             // Snap into position
             // WARNING: lagging can cause jumps in rotation & stop point can be missed, therefore it needs a failsafe
-            if (angleDiff < 5f || prevDiff < angleDiff)
+            if (angleDiff < 5f || _prevDiff < angleDiff)
             {
-                chestLidObject.transform.rotation = finalRotationTarget;
-                isOpening = false;
+                _chestLidObject.transform.rotation = _finalRotationTarget;
+                _isOpening = false;
                 return;
             }
-            chestLidObject.transform.RotateAround(rotationPoint, Vector3.right, angularSpeed * Time.deltaTime);
-            prevDiff = angleDiff;
+            _chestLidObject.transform.RotateAround(_rotationPoint, Vector3.right, _angularSpeed * Time.deltaTime);
+            _prevDiff = angleDiff;
 
         }
     }
 
-    private void keyFall()
+    /// <summary>
+    /// Make key <see langword="object"/> ungrabbable 
+    /// </summary>
+    private void KeyFall()
     {
         keyObject.GetComponent<XRGrabInteractable>().enabled = false;
-        Debug.Log("DISABLE");
     }
 
-    private void lockFall()
+    /// <summary>
+    /// Disable lock, make it fall and play chest opening animation
+    /// </summary>
+    private void LockFall()
     {
-        lockObject.GetComponent<SphereCollider>().enabled = false;
-        lockObject.GetComponent<MeshCollider>().enabled = true;
-        lockObject.GetComponent<Rigidbody>().isKinematic = false;
+        _lockObject.GetComponent<SphereCollider>().enabled = false;
+        _lockObject.GetComponent<MeshCollider>().enabled = true;
+        _lockObject.GetComponent<Rigidbody>().isKinematic = false;
         // Play animation of chest opening
-        isOpening = true;
+        _isOpening = true;
     }
 
-    public void onSnap()
+    /// <summary>
+    /// When key snaps to lock, start lock & key falling  
+    /// </summary>
+    public void OnSnap()
     {
         // On snap the lock falls to the ground
         // Key has to be kinematic and not selectable
@@ -80,13 +85,13 @@ public class Chest : MonoBehaviour
 
         // For networking sync, we have to wait until grabbed key is released, before disabling grab component
         GrabbableElement keyGrabTracker = keyObject.GetComponent<GrabbableElement>();
-        while (!keyGrabTracker.owner && !keyGrabTracker.grabInteractable.enabled) { 
+        // Fix grab/snap bug for network synchronization: delay key disabling for the copies
+        while (!keyGrabTracker.owner && !keyGrabTracker.grabInteractable.enabled)
+        {
         }
 
-        Invoke(nameof(keyFall), 0.5f);
+        Invoke(nameof(KeyFall), 0.5f);
         // Activate mesh collider and deactivate sphere collider
-        Invoke(nameof(lockFall), 1.0f);
+        Invoke(nameof(LockFall), 1.0f);
     }
-
-
 }

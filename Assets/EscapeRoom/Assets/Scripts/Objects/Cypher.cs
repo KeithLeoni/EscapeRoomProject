@@ -1,42 +1,44 @@
-using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Ubiq.Messaging;
 
+/// <summary>
+/// Track inner wheel rotation for network synchronization 
+/// </summary>
 public class Cypher : MonoBehaviour
 {
-    private XRGrabInteractable cypherInteractable;
-    private XRKnob knobInteractable;
+    private XRGrabInteractable _cypherInteractable;
+    private XRKnob _knobInteractable;
     // Track network
     [System.NonSerialized]
     public bool owner = false;                      // are you currently grabbing/interacting with the object
-    NetworkContext context;
+    private NetworkContext _context;
 
     void Start()
     {
         // Enable Knob interactable only if object is being grabbed
-        cypherInteractable = GetComponent<XRGrabInteractable>();
-        knobInteractable = gameObject.GetComponentInChildren<XRKnob>();
-        cypherInteractable.selectEntered.AddListener(onSelect);
-        cypherInteractable.selectExited.AddListener(onDeselect);
-        knobInteractable.enabled = false;
+        _cypherInteractable = GetComponent<XRGrabInteractable>();
+        _knobInteractable = gameObject.GetComponentInChildren<XRKnob>();
+        _cypherInteractable.selectEntered.AddListener(OnSelect);
+        _cypherInteractable.selectExited.AddListener(OnDeselect);
+        _knobInteractable.enabled = false;
         // Network
-        context = NetworkScene.Register(this);
-        knobInteractable.selectEntered.AddListener(StartTracking);
-        knobInteractable.selectExited.AddListener(StopTracking);
+        _context = NetworkScene.Register(this);
+        _knobInteractable.selectEntered.AddListener(StartTracking);
+        _knobInteractable.selectExited.AddListener(StopTracking);
     }
 
 
-    void onSelect(SelectEnterEventArgs args)
+    void OnSelect(SelectEnterEventArgs args)
     {
         // activate knob
-        knobInteractable.enabled = true;
+        _knobInteractable.enabled = true;
     }
 
-    void onDeselect(SelectExitEventArgs args)
+    void OnDeselect(SelectExitEventArgs args)
     {
-        knobInteractable.enabled = false;
+        _knobInteractable.enabled = false;
     }
 
 
@@ -58,7 +60,8 @@ public class Cypher : MonoBehaviour
         public bool release;
     }
 
-    private void StartTracking(SelectEnterEventArgs args) {
+    private void StartTracking(SelectEnterEventArgs args)
+    {
         owner = true;
     }
 
@@ -74,7 +77,7 @@ public class Cypher : MonoBehaviour
         var message = new TrackRotMsg();
         message.rotation = transform.localRotation;
         message.release = false;
-        context.SendJson(message);
+        _context.SendJson(message);
     }
     // Send tracking message to release object
     private void SendReleaseMessage()
@@ -82,7 +85,7 @@ public class Cypher : MonoBehaviour
         var message = new TrackRotMsg();
         message.rotation = transform.localRotation;
         message.release = true;
-        context.SendJson(message);
+        _context.SendJson(message);
     }
 
     // Network Ubiq: track rotation
@@ -96,18 +99,17 @@ public class Cypher : MonoBehaviour
             // Someone grabbed rotatable knob object
             owner = false;
             // Disable Knob component
-            if (knobInteractable.enabled)
+            if (_knobInteractable.enabled)
             {
-                knobInteractable.enabled = false;
+                _knobInteractable.enabled = false;
             }
-
             // Keep tracking rotation
-            knobInteractable.knobObject.transform.localRotation = m.rotation;
+            _knobInteractable.knobObject.transform.localRotation = m.rotation;
         }
         else
         {
             // Release grab
-            knobInteractable.enabled = true;
+            _knobInteractable.enabled = true;
         }
     }
 }

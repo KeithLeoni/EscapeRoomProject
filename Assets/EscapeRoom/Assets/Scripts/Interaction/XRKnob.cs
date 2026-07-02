@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
@@ -33,16 +32,16 @@ public class XRKnob : XRBaseInteractable
         base.OnEnable();
         selectEntered.AddListener(StartGrab);
         // Outline component management
-        hoverEntered.AddListener(enableHighlight);
-        hoverExited.AddListener(disableHighlight);
+        hoverEntered.AddListener(EnableHighlight);
+        hoverExited.AddListener(DisableHighlight);
     }
 
     protected override void OnDisable()
     {
         selectEntered.RemoveListener(StartGrab);
         // Outline component
-        hoverEntered.RemoveListener(enableHighlight);
-        hoverExited.RemoveListener(disableHighlight);
+        hoverEntered.RemoveListener(EnableHighlight);
+        hoverExited.RemoveListener(DisableHighlight);
         base.OnDisable();
     }
 
@@ -59,7 +58,7 @@ public class XRKnob : XRBaseInteractable
     /// <summary>
     /// Enable Outline highlight when hovering  
     /// </summary>
-    void enableHighlight(HoverEnterEventArgs args)
+    void EnableHighlight(HoverEnterEventArgs args)
     {
         _outlineComponent.enabled = true;
     }
@@ -67,11 +66,11 @@ public class XRKnob : XRBaseInteractable
     /// <summary>
     /// Disable Outline highlight when exiting hover state 
     /// </summary>
-    void disableHighlight(HoverExitEventArgs args)
+    void DisableHighlight(HoverExitEventArgs args)
     {
         _outlineComponent.enabled = false;
     }
-    
+
     /// <summary>
     /// While object is selected, rotate along the given axis 
     /// </summary>
