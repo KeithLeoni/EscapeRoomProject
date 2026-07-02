@@ -1,14 +1,13 @@
 ﻿using UnityEngine;
 
-
 public class OutlineVialFix : MonoBehaviour
 {
     private void Start()
     {
-        Invoke(nameof(fixOutline), 1);
+        Invoke(nameof(FixOutline), 1);
     }
 
-    private void fixOutline()
+    private void FixOutline()
     {
         gameObject.GetComponent<Outline>().enabled = false;
     }

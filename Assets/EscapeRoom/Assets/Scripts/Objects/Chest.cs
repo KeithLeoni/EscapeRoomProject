@@ -26,7 +26,7 @@ public class Chest : MonoBehaviour
     {
         // Get Lock
         _lockObject = gameObject.GetNamedChild("Lock");
-        _chestLidObject = gameObject.GetNamedChild("Chest_Lid");
+        _chestLidObject = gameObject.GetNamedChild("Lid");
         _rotationPoint = gameObject.GetNamedChild("PivotPoint").transform.position;
         _finalRotationTarget = Quaternion.Euler(240f, 0, 0);
         _isOpening = false;
