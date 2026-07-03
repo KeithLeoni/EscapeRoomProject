@@ -35,11 +35,12 @@ public class MagicBook : MonoBehaviour
             CharacterController cc = playerRig.GetComponent<CharacterController>();
             if(cc != null) cc.enabled = false;
 
-            // Teleport the rig to the new room's coordinates
             playerRig.position = dest.position;
+            playerRig.rotation = dest.rotation;
 
-            // Re-enable character controller
             if(cc != null) cc.enabled = true;
+
+            
 
         }
     }
