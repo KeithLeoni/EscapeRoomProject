@@ -56,7 +56,7 @@ public class FuseBox : MonoBehaviour
         _indicatorMeshRenderer = (parentObject.transform.parent.gameObject).GetNamedChild("LightSignals").GetComponent<MeshRenderer>();
 
         _rotationPoint = _grateDoor.gameObject.GetNamedChild("pivotPoint").transform.position;
-        _finalRotationTarget = Quaternion.Euler(0, 190f, 0);
+        _finalRotationTarget = Quaternion.Euler(180, -45f, 0);
     }
 
     void Update()

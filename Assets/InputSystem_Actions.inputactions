@@ -88,7 +88,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "FlyUp",
+                    "name": "FlyDown",
                     "type": "Button",
                     "id": "86dca426-d3f6-4110-ad75-1ee8c3ff1cfb",
                     "expectedControlType": "",
@@ -97,18 +97,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "FlyDown",
+                    "name": "FlyUp",
                     "type": "Button",
                     "id": "c359f1bc-7d45-4d98-8189-3accd55c576b",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "TogglePower",
-                    "type": "Button",
-                    "id": "30038469-90b1-4f08-a3e3-a37483d7e322",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -508,7 +499,7 @@
                     "interactions": "Hold",
                     "processors": "",
                     "groups": ";XR",
-                    "action": "FlyUp",
+                    "action": "FlyDown",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -519,18 +510,7 @@
                     "interactions": "Hold",
                     "processors": "",
                     "groups": ";XR",
-                    "action": "FlyDown",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "7e358c91-ad77-4d32-87f8-662f33012131",
-                    "path": "<XRController>{RightHand}/gripButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";XR",
-                    "action": "TogglePower",
+                    "action": "FlyUp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

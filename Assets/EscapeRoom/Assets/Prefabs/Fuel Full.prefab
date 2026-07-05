@@ -318,7 +318,7 @@ GameObject:
   - component: {fileID: 4876909210615967494}
   - component: {fileID: 5046659968376301717}
   - component: {fileID: 884881289816572937}
-  - component: {fileID: 5717855889019873948}
+  - component: {fileID: 4829519203312932184}
   m_Layer: 0
   m_Name: Fuel Full
   m_TagString: Untagged
@@ -493,7 +493,7 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 0
---- !u!114 &5717855889019873948
+--- !u!114 &4829519203312932184
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -502,11 +502,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5206235276209587408}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a09add186d71b3042977127c69277c6f, type: 3}
+  m_Script: {fileID: 11500000, guid: b0624c9f56ce4e2448976fd7c5a704da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabbableElement
   grabInteractable: {fileID: 0}
-  owner: 0
   socketElement: {fileID: 0}
 --- !u!1 &5283857501913084812
 GameObject:

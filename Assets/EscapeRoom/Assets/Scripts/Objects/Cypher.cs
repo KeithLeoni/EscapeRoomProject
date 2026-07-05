@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Ubiq.Messaging;
+using Unity.XR.CoreUtils;
 
 /// <summary>
 /// Track inner wheel rotation for network synchronization 
@@ -9,7 +10,7 @@ using Ubiq.Messaging;
 public class Cypher : MonoBehaviour
 {
     private XRGrabInteractable _cypherInteractable;
-    private XRKnob _knobInteractable;
+    private MeshCollider _knobCollider;
     // Track network
     [System.NonSerialized]
     public bool owner = false;                      // are you currently grabbing/interacting with the object
@@ -19,26 +20,30 @@ public class Cypher : MonoBehaviour
     {
         // Enable Knob interactable only if object is being grabbed
         _cypherInteractable = GetComponent<XRGrabInteractable>();
-        _knobInteractable = gameObject.GetComponentInChildren<XRKnob>();
+        _knobCollider = gameObject.GetNamedChild("Inner").GetComponent<MeshCollider>();
         _cypherInteractable.selectEntered.AddListener(OnSelect);
         _cypherInteractable.selectExited.AddListener(OnDeselect);
-        _knobInteractable.enabled = false;
+        _knobCollider.enabled = false;
         // Network
         _context = NetworkScene.Register(this);
-        _knobInteractable.selectEntered.AddListener(StartTracking);
-        _knobInteractable.selectExited.AddListener(StopTracking);
+        //_knobInteractable.selectEntered.AddListener(StartTracking);
+        //_knobInteractable.selectExited.AddListener(StopTracking);
     }
 
 
     void OnSelect(SelectEnterEventArgs args)
     {
-        // activate knob
-        _knobInteractable.enabled = true;
+        // Deactivate box collider of grabbable object to prevent conflicts
+        gameObject.GetComponent<BoxCollider>().enabled = false;
+        // Activate knob interactable
+        _knobCollider.enabled = true;
     }
 
     void OnDeselect(SelectExitEventArgs args)
     {
-        _knobInteractable.enabled = false;
+        _knobCollider.enabled = false;
+        // Reactivate collider
+        gameObject.GetComponent<BoxCollider>().enabled = true;
     }
 
 
@@ -91,6 +96,7 @@ public class Cypher : MonoBehaviour
     // Network Ubiq: track rotation
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
     {
+     /*
         // Parse message
         var m = message.FromJson<TrackRotMsg>();
 
@@ -110,6 +116,6 @@ public class Cypher : MonoBehaviour
         {
             // Release grab
             _knobInteractable.enabled = true;
-        }
+        }*/
     }
 }
