@@ -58,9 +58,9 @@ public class GrabbableElement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 currentPosition = transform.position;
         if (owner)
         {
+            Vector3 currentPosition = transform.position;
             if (currentPosition != _prevPosition)
             {
                 // Object moved: user is either grabbing or object is falling

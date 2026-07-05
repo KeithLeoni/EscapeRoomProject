@@ -29,6 +29,7 @@ public class Cypher : MonoBehaviour
         _knobCollider.enabled = false;
         // Network
         _context = NetworkScene.Register(this);
+        _knobInteractable = gameObject.GetNamedChild("Inner").GetComponent<XRKnob>();
         _knobInteractable.selectEntered.AddListener(StartTracking);
         _knobInteractable.selectExited.AddListener(StopTracking);
     }
@@ -54,13 +55,16 @@ public class Cypher : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Optimize network message sending
-        int currentSector = _knobInteractable.GetCurrentSector();
-        if (owner && (currentSector != _prevSector) )
+        if (owner)
         {
-            // Send network message to make update copies' position & rotation
-            SendTrackMessage();
-            _prevSector = currentSector;
+            // Optimize network message sending
+            int currentSector = _knobInteractable.GetCurrentSector();
+            if (currentSector != _prevSector)
+            {
+                // Send network message to make update copies' position & rotation
+                SendTrackMessage();
+                _prevSector = currentSector;                
+            }
         }
     }
 

@@ -105,11 +105,10 @@ public class FlyLocomotionProvider : MonoBehaviour
                 move = forward * moveInput.y * forwardSpeed + right * moveInput.x * strafeSpeed;
                 // Add vertical movement: check that vertical displacement does not put camera below minHeight
                 Vector3 verticalMove = up * verticalInput * verticalSpeed;
-                if (_mainCamera.transform.position.y + verticalMove.y < _minHeight)
+                if (_mainCamera.transform.position.y + (verticalMove.y * Time.deltaTime) >= _minHeight)
                 {
-                    verticalMove.y = _minHeight - _mainCamera.transform.position.y;
+                    move += verticalMove;
                 }
-                move += verticalMove;
             }
             else
             {
@@ -118,7 +117,8 @@ public class FlyLocomotionProvider : MonoBehaviour
             }
 
             // Apply movement in world space and multiply by delta time
-            _characterController.Move(move * Time.deltaTime);
+            move *= Time.deltaTime;
+            _characterController.Move(move);     
         }
         else if (scenePowerManager.landFlying)
         {
