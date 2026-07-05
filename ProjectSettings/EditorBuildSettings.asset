@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/EscapeRoom/EscapeRoom.unity
+    path: Assets/Scenes/EscapeRoom.unity
     guid: 3081c442e808dd34abcfb553aa86ab90
   - enabled: 0
     path: Assets/Samples/XR Interaction Toolkit/3.0.7/Starter Assets/DemoScene.unity

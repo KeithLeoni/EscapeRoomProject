@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4445508228773585833
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7563115099207389272}
+  - component: {fileID: 2474707020317310564}
+  m_Layer: 2
+  m_Name: Fly
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7563115099207389272
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4445508228773585833}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2474707020317310564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4445508228773585833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a05ffd489311f7a428e3f897f65d6f55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlyLocomotionProvider
+  scenePowerManager: {fileID: 0}
+  moveAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Move
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: da42c15f-480a-4bef-9fd7-72b8c5c5fb2c
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -8198699208435500284, guid: c348712bda248c246b8c49b3db54643f, type: 3}
+  ascendAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Ascend
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: edc4036d-291a-4a41-a5fb-3508f9d4cf68
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -7794894792905214134, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  descendAction:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Descend
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 47fd51d4-cb0d-4e30-8ad7-1ffe2dbca50e
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 4856880945478664445, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  forwardSpeed: 3
+  verticalSpeed: 2.5
+  strafeSpeed: 2
