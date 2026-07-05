@@ -11,10 +11,13 @@ public class Cypher : MonoBehaviour
 {
     private XRGrabInteractable _cypherInteractable;
     private MeshCollider _knobCollider;
+    private XRKnob _knobInteractable;
     // Track network
     [System.NonSerialized]
     public bool owner = false;                      // are you currently grabbing/interacting with the object
     private NetworkContext _context;
+    // only track state while grabbing
+    private int _prevSector = 0;
 
     void Start()
     {
@@ -26,8 +29,8 @@ public class Cypher : MonoBehaviour
         _knobCollider.enabled = false;
         // Network
         _context = NetworkScene.Register(this);
-        //_knobInteractable.selectEntered.AddListener(StartTracking);
-        //_knobInteractable.selectExited.AddListener(StopTracking);
+        _knobInteractable.selectEntered.AddListener(StartTracking);
+        _knobInteractable.selectExited.AddListener(StopTracking);
     }
 
 
@@ -51,10 +54,13 @@ public class Cypher : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (owner)
+        // Optimize network message sending
+        int currentSector = _knobInteractable.GetCurrentSector();
+        if (owner && (currentSector != _prevSector) )
         {
             // Send network message to make update copies' position & rotation
             SendTrackMessage();
+            _prevSector = currentSector;
         }
     }
 
@@ -68,6 +74,8 @@ public class Cypher : MonoBehaviour
     private void StartTracking(SelectEnterEventArgs args)
     {
         owner = true;
+        // Start tracking sector state
+        _prevSector = _knobInteractable.GetCurrentSector();
     }
 
     private void StopTracking(SelectExitEventArgs args)
@@ -96,7 +104,6 @@ public class Cypher : MonoBehaviour
     // Network Ubiq: track rotation
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
     {
-     /*
         // Parse message
         var m = message.FromJson<TrackRotMsg>();
 
@@ -116,6 +123,6 @@ public class Cypher : MonoBehaviour
         {
             // Release grab
             _knobInteractable.enabled = true;
-        }*/
+        }
     }
 }

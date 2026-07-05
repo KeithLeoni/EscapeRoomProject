@@ -58,33 +58,28 @@ public class GrabbableElement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Vector3 currentPosition = transform.position;
         if (owner)
         {
-            // Was the object already realesed?
-            if (_waitForFall)
+            if (currentPosition != _prevPosition)
             {
-                if (_prevPosition != transform.localPosition)
-                {
-                    // Object is still falling
-                    _prevPosition = transform.localPosition;
-                    // Send network message to make update copies' position & rotation
-                    SendTrackMessage();
-                }
-                else
+                // Object moved: user is either grabbing or object is falling
+                // Send network message to make update copies' position & rotation
+                SendTrackMessage();
+                _prevPosition = currentPosition;
+            }
+            else
+            {
+                // Object is still
+                if (_waitForFall)
                 {
                     // Object fall ended; release grab
                     owner = false;
                     _waitForFall = false;
                     _prevPosition = new Vector3(0, -100, 0);
-                    SendReleaseMessage();
+                    SendReleaseMessage();                    
                 }
             }
-            else
-            {
-                // Send network message to make update copies' position & rotation
-                SendTrackMessage();
-            }
-
         }
     }
 
@@ -95,6 +90,7 @@ public class GrabbableElement : MonoBehaviour
     {
         _outlineComponent.enabled = true;
     }
+
     /// <summary>
     /// Disable Outline highlight when exiting hover state 
     /// </summary>
@@ -105,6 +101,10 @@ public class GrabbableElement : MonoBehaviour
 
     // ------------------------------------------------------------------------------------
     // Network sync management
+
+    /// <summary>
+    /// When object is grabbed start tracking position
+    /// </summary>
     private void OnSelect(SelectEnterEventArgs args)
     {
         // Only track if Grab was not triggered due to Socket interaction
@@ -116,6 +116,9 @@ public class GrabbableElement : MonoBehaviour
         owner = true;
     }
 
+    /// <summary>
+    /// When object is released, keep tracking as long as the tracked object is still falling  
+    /// </summary>
     private void OnDeselect(SelectExitEventArgs args)
     {
         _waitForFall = true;
@@ -123,7 +126,6 @@ public class GrabbableElement : MonoBehaviour
 
     private struct TrackGrabMsg
     {
-        // Cannot use this to test on local loopback
         public Vector3 position;
         public Quaternion rotation;
         public bool release;
@@ -133,8 +135,8 @@ public class GrabbableElement : MonoBehaviour
     private void SendTrackMessage()
     {
         var message = new TrackGrabMsg();
-        message.position = transform.localPosition;
-        message.rotation = transform.localRotation;
+        message.position = transform.position;
+        message.rotation = transform.rotation;
         message.release = false;
         context.SendJson(message);
     }
@@ -143,8 +145,8 @@ public class GrabbableElement : MonoBehaviour
     private void SendReleaseMessage()
     {
         var message = new TrackGrabMsg();
-        message.position = transform.localPosition;
-        message.rotation = transform.localRotation;
+        message.position = transform.position;
+        message.rotation = transform.rotation;
         message.release = true;
         context.SendJson(message);
     }
@@ -167,8 +169,8 @@ public class GrabbableElement : MonoBehaviour
                 GetComponent<Rigidbody>().isKinematic = true;
             }
             // Keep tracking position & rotation
-            gameObject.transform.localPosition = m.position;
-            gameObject.transform.localRotation = m.rotation;
+            gameObject.transform.position = m.position;
+            gameObject.transform.rotation = m.rotation;
         }
         else
         {

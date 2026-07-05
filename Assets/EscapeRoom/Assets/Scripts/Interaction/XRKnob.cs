@@ -95,6 +95,12 @@ public class XRKnob : XRBaseInteractable
     {
         _outlineComponent.enabled = false;
     }
+
+    public int GetCurrentSector()
+    {
+        float currentZ = knobObject.transform.localRotation.eulerAngles.z - _defaultRotation.z;
+        return ClampCircularRange(Mathf.RoundToInt(currentZ / 36f));
+    }
     
     /// <summary>
     /// While object is selected, rotate along the given axis 
@@ -107,8 +113,7 @@ public class XRKnob : XRBaseInteractable
         float rollAngle = -Vector3.SignedAngle(_prevControllerAngle, newControllerProjection, knobObject.transform.forward);
         _snapCountDown += rollAngle;
         // Consider the offset of the initial rotation
-        float currentZ = knobObject.transform.localRotation.eulerAngles.z - _defaultRotation.z;
-        int currentSector = ClampCircularRange(Mathf.RoundToInt(currentZ / 36f));
+        int currentSector = GetCurrentSector();
         int snapTo = currentSector;
         // Check Countdown
         if (Math.Abs(_snapCountDown) >= 36f)
@@ -129,7 +134,6 @@ public class XRKnob : XRBaseInteractable
         }
         // Save new rotation position
         _prevControllerAngle = newControllerProjection;
-        Debug.Log("DELTA ROTATION: " + rollAngle);
     }
 
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
