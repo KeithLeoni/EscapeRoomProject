@@ -38,11 +38,7 @@ public class FlyLocomotionProvider : MonoBehaviour
         _characterController = GetComponentInParent<CharacterController>();
         if (_characterController == null)
         {
-            Debug.LogWarning("Character Controller not found in the hierchy");
-        }
-        else
-        {
-            Debug.LogWarning("Character Controller Found");
+            Debug.LogWarning("Character Controller not found in the hierarchy");
         }
 
     }
