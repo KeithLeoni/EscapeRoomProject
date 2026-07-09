@@ -12,9 +12,6 @@ namespace Ubiq.Samples
         [Tooltip("Ubiq main panel object")]
         public SocialMenu mainMenu;
         public Transform XROrigin;
-        // Physical spawn positions for the 3 players in the character selection screen
-        public Transform[] spawnPoints;
-        public Transform tablePosition;
         // Track people in rooom
         private string[] _peersInRoom = { "", "", "" };
         private CharacterController _characterController;
@@ -89,10 +86,6 @@ namespace Ubiq.Samples
         /// </summary>
         void EnterPowerSelection(int spawnIndex)
         {
-            // Compute delta difference between current position and target 
-            _characterController.Move(spawnPoints[spawnIndex].position - Camera.main.transform.position);
-            // Look at table
-            XROrigin.LookAt(tablePosition.position);
         }
 
         /// <summary>

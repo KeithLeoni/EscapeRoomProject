@@ -44,6 +44,7 @@ public class AvatarGraphicsSynchronizer : MonoBehaviour
     {
         // Parse message
         var m = message.FromJson<UpdateGraphicsMsg>();
+        Debug.Log(m.uuid);
         // Find the remote avatar to change
         Ubiq.Avatars.Avatar[] avatars = _avatarManager.GetComponentsInChildren<Ubiq.Avatars.Avatar>();
         foreach (Ubiq.Avatars.Avatar item in avatars)

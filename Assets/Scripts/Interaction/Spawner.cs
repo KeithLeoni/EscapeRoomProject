@@ -1,13 +1,15 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using Ubiq.Messaging;
 using Ubiq.Spawning;
 
 /// <summary>
-/// Spawns specified element when player "grabs" it 
+/// Spawns specified element
 /// </summary>
-public class Spawner : XRBaseInteractable
+public class Spawner : MonoBehaviour
 {
+    public NetworkId NetworkId { get; set; }
     // Prefab to spawn
     public GameObject objectToSpawn;
     [Tooltip("Spawning point relative to the world")]
@@ -15,33 +17,13 @@ public class Spawner : XRBaseInteractable
     public NetworkSpawnManager networkSpawner;
     [Tooltip("Maximum number of objects each user is allowed to spawn")]
     public int maxSpawningCount = 3;
-    private Outline _outlineComponent;
+    // Setup for validity checking
+    private NetworkContext _context;
+    public ScenePowerManager.Power[] selectedPowers = { ScenePowerManager.Power.nothing, ScenePowerManager.Power.nothing, ScenePowerManager.Power.nothing };
 
     void Start()
     {
-        // Add outline component
-        _outlineComponent = gameObject.AddComponent<Outline>();
-        _outlineComponent.enabled = false;
-        // Set up outline look
-        _outlineComponent.OutlineWidth = 4;
-    }
-
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-        selectEntered.AddListener(SpawnObject);
-        // Outline component management
-        hoverEntered.AddListener(EnableHighlight);
-        hoverExited.AddListener(DisableHighlight);
-    }
-
-    protected override void OnDisable()
-    {
-        selectEntered.RemoveListener(SpawnObject);
-        // Outline component
-        hoverEntered.RemoveListener(EnableHighlight);
-        hoverExited.RemoveListener(DisableHighlight);
-        base.OnDisable();
+        _context = NetworkScene.Register(this);
     }
 
     /// <summary>
@@ -60,19 +42,29 @@ public class Spawner : XRBaseInteractable
         }
     }
 
-    /// <summary>
-    /// Enable Outline highlight when hovering  
-    /// </summary>
-    void EnableHighlight(HoverEnterEventArgs args)
+    // ----------------------------------------
+    // Network control
+    
+    // Message to synchronize selected powers across all copies
+    private struct UpdateMsg
     {
-        _outlineComponent.enabled = true;
+        public ScenePowerManager.Power power;
+        public string paperOwner;
+    }
+    private void SendMessage(ScenePowerManager.Power selectedPower, string owner)
+    {
+        var message = new UpdateMsg();
+        message.power = selectedPower;
+        message.paperOwner = owner;
+        _context.SendJson(message);
     }
 
-    /// <summary>
-    /// Disable Outline highlight when exiting hover state 
-    /// </summary>
-    void DisableHighlight(HoverExitEventArgs args)
+    public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
     {
-        _outlineComponent.enabled = false;
+        // Parse message
+        var m = message.FromJson<UpdateMsg>();
+        // Update status
+        //selectedPowers
     }
+
 }

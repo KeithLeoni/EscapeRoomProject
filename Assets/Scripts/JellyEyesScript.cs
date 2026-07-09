@@ -22,6 +22,20 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
 
     void Start()
     {
+        // Find Graphics updater in the scene to change look of remote copies of the avatar
+        _graphicsSynchronizer = FindFirstObjectByType<AvatarGraphicsSynchronizer>();
+        if (_graphicsSynchronizer == null)
+        {
+            Debug.LogError("Graphics Synchronizer not found! Avatar Graphics will not be updated.");
+        }
+
+        // Do not proceed if it is not your local avatar
+        if (!gameObject.GetComponent<Ubiq.Avatars.Avatar>().IsLocal)
+        {
+            return;
+        }
+        _uuidAvatar = gameObject.GetComponent<Ubiq.Avatars.Avatar>().Peer.uuid;
+
         _localCamera = Camera.main;
         if (_localCamera == null) _localCamera = GetComponentInChildren<Camera>();
 
@@ -45,14 +59,6 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
         {
             _localCamera.cullingMask &= ~(1 << _traceLayerIndex);
         }
-
-        // Find Graphics updater in the scene to change look of remote copies of the avatar
-        _graphicsSynchronizer = FindFirstObjectByType<AvatarGraphicsSynchronizer>();
-        if (_graphicsSynchronizer == null)
-        {
-            Debug.LogError("Graphics Synchronizer not found! Avatar Graphics will not be updated.");
-        }
-        _uuidAvatar = gameObject.GetComponent<Ubiq.Avatars.Avatar>().Peer.uuid;
     }
 
     void Update()
@@ -67,7 +73,7 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
             if (_graphicsSynchronizer != null)
             {
                 _graphicsSynchronizer.SendTrackMessage(_uuidAvatar, ScenePowerManager.Power.jellyVision);
-            }            
+            }
         }
     }
 
