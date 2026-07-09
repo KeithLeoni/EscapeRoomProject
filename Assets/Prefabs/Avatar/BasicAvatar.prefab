@@ -83,12 +83,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3172939939781028348}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22b5e06a2aec95844b28a259f46c40f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Textures: {fileID: 11400000, guid: 07f1d770cbbbb604482d4369ab227e9b, type: 2}
+  Textures: {fileID: 11400000, guid: 711a32cdfac3cd644a666f4575bf6f22, type: 2}
   RandomTextureOnSpawn: 0
   SaveTextureSetting: 1
   OnTextureChanged:
@@ -191,10 +191,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3444175152561107260}
     m_Modifications:
-    - target: {fileID: 253003865581486029, guid: b0d64f917d2447e4f85037ad6283d5bf, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 0b09a9f829355594ca66f20c65e1885d, type: 2}
     - target: {fileID: 2133178104073127332, guid: b0d64f917d2447e4f85037ad6283d5bf, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 1
@@ -247,10 +243,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5517618425911502283, guid: b0d64f917d2447e4f85037ad6283d5bf, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: 0b09a9f829355594ca66f20c65e1885d, type: 2}
     m_RemovedComponents:
     - {fileID: 1298553101150500170, guid: b0d64f917d2447e4f85037ad6283d5bf, type: 3}
     m_RemovedGameObjects: []

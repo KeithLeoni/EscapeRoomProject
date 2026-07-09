@@ -1,18 +1,13 @@
+using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Locomotion.Movement;
+using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
 /// <summary>
-/// Create an empty <see langword="object"/> <see langword="and"/> <see langword="add"/> <see langword="this"/>
-/// component to create a locomotion flying system. Add the <see langword="object"/> under the Locomotion <see langword="object"/>
-/// <see langword="in"/> the XR Rig  
+/// Component to control flying mechanics
 /// </summary>
 public class FlyLocomotionProvider : MonoBehaviour
 {
-    [Header("Scene power management object")]
-    [Tooltip("Object used to handle power activation")]
-    public ScenePowerManager scenePowerManager;
     // Controller Input 
     [Header("Input Actions")]
     [Tooltip("Input Action for movement for 2d movement")]
@@ -21,26 +16,34 @@ public class FlyLocomotionProvider : MonoBehaviour
     public InputActionProperty ascendAction;
     [Tooltip("Input Action for vertical movement (Descend)")]
     public InputActionProperty descendAction;
+
     // Physics settings
     [Header("Settings")]
-    private float _minHeight = 2;          // Minimum height accepted when in flying mode
     public float forwardSpeed = 3f;         // Forward/Backward speed
     public float verticalSpeed = 2.5f;      // Up/Down speed
     public float strafeSpeed = 2f;          // Left/Right speed
 
+    // Component needed for computations
     private Camera _mainCamera;
     private CharacterController _characterController;
+    private GameObject _groundedMoveProvider;
 
     private void Awake()
     {
+        // Extrapolate from the scene XROrigin & move providers
+        GameObject xrOrigin = FindFirstObjectByType<XROrigin>().gameObject;
+
         // Setup camera and initialize flyEnabled variable
         _mainCamera = Camera.main;
-        _characterController = GetComponentInParent<CharacterController>();
+        _characterController = xrOrigin.GetComponent<CharacterController>();
         if (_characterController == null)
         {
-            Debug.LogWarning("Character Controller not found in the hierarchy");
+            Debug.LogError("Character Controller not found in the hierarchy");
         }
 
+        // Find move providers
+        _groundedMoveProvider = xrOrigin.GetComponentInChildren<DynamicMoveProvider>().gameObject;
+        _groundedMoveProvider.SetActive(false);
     }
 
     private void OnEnable()
@@ -51,87 +54,60 @@ public class FlyLocomotionProvider : MonoBehaviour
         descendAction.action.Enable();
     }
 
+    // Temporarly commented to avoid input disabling conflicts with avatarsizecontroller
+    // when usin the testing menu
     private void OnDisable()
     {
-        moveAction.action.Disable();
+        _groundedMoveProvider.SetActive(true);
+        /*
         ascendAction.action.Disable();
         descendAction.action.Disable();
+        */
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (scenePowerManager.flyingPower)
+        Vector3 move = Vector3.zero;
+        // Get head/camera forward/right for movement direction
+        Transform head = _mainCamera.transform;
+        Vector3 forward = head.forward;
+        Vector3 right = head.right;
+        Vector3 up = head.up;
+        float verticalInput = 0;
+
+        // Read joystick input
+        Vector2 moveInput = moveAction.action.ReadValue<Vector2>();
+        // Handle hold interaction
+        if (ascendAction.action.IsPressed())
         {
-            Vector3 move = Vector3.zero;
-            // Get head/camera forward/right for movement direction
-            Transform head = _mainCamera.transform;
-            Vector3 forward = head.forward;
-            Vector3 right = head.right;
-            Vector3 up = head.up;
-            float verticalInput = 0;
-
-            if (_mainCamera.transform.position.y >= _minHeight)
+            // Annul vertical movement if both buttons are pressed at the same time
+            if (!descendAction.action.IsPressed())
             {
-                // Read joystick input
-                Vector2 moveInput = moveAction.action.ReadValue<Vector2>();
-                // Handle hold interaction
-                if (ascendAction.action.IsPressed())
-                {
-                    // Annul vertical movement if both buttons are pressed at the same time
-                    if (!descendAction.action.IsPressed())
-                    {
-                        verticalInput = 1;
-                    }
-                }
-                else if (descendAction.action.IsPressed())
-                {
-                    if (!ascendAction.action.IsPressed())
-                    {
-                        verticalInput = -1;
-                    }
-                }
-
-                // Flatten forward/right to avoid unwanted vertical tilt
-                forward.y = 0;
-                right.y = 0;
-                forward.Normalize();
-                right.Normalize();
-
-                // Calculate movement vector
-                move = forward * moveInput.y * forwardSpeed + right * moveInput.x * strafeSpeed;
-                // Add vertical movement: check that vertical displacement does not put camera below minHeight
-                Vector3 verticalMove = up * verticalInput * verticalSpeed;
-                if (_mainCamera.transform.position.y + (verticalMove.y * Time.deltaTime) >= _minHeight)
-                {
-                    move += verticalMove;
-                }
-            }
-            else
-            {
-                // If flight mode has just been enabled float upwards to minimum height
-                move += up * verticalSpeed;
-            }
-
-            // Apply movement in world space and multiply by delta time
-            move *= Time.deltaTime;
-            _characterController.Move(move);     
-        }
-        else if (scenePowerManager.landFlying)
-        {
-            // Apply downward force until player lands
-            if (!_characterController.isGrounded)
-            {
-                _characterController.Move(-Vector3.up * 9.8f * Time.deltaTime);
-            }
-            else
-            {
-                scenePowerManager.landFlying = false;
-                // Enable other locomotion providers & force player to the ground
-                for (int i = 0; i < scenePowerManager.groundedMoveProvider.Length; i++)
-                {
-                    scenePowerManager.groundedMoveProvider[i].SetActive(true);
-                }
+                verticalInput = 1;
             }
         }
+        else if (descendAction.action.IsPressed())
+        {
+            if (!ascendAction.action.IsPressed())
+            {
+                verticalInput = -1;
+            }
+        }
+
+        // Flatten forward/right to avoid unwanted vertical tilt
+        forward.y = 0;
+        right.y = 0;
+        forward.Normalize();
+        right.Normalize();
+
+        // Calculate movement vector
+        move = forward * moveInput.y * forwardSpeed + right * moveInput.x * strafeSpeed;
+        // Add vertical movement: check that vertical displacement does not put camera below minHeight
+        Vector3 verticalMove = up * verticalInput * verticalSpeed;
+        move += verticalMove;
+        // Apply movement in world space and multiply by delta time
+        move *= Time.deltaTime;
+        _characterController.Move(move);
+
     }
 }

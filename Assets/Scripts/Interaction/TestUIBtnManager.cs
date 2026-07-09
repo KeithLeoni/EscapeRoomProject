@@ -19,35 +19,40 @@ public class TestUIBtnManager : MonoBehaviour
             Debug.Log("Scene power manager object not found");
         }
         else {
-            int player = scenePowerManager.GetComponent<ScenePowerManager>().playerNumber;
-            if (player == 1)
+            ScenePowerManager.Power player = scenePowerManager.GetComponent<ScenePowerManager>().GetCurrentPower();
+            switch (player)
             {
-                jellyBtn.GetComponent<Image>().color = Color.coral;
-            } else if (player == 2)
-            {
-                flyBtn.GetComponent<Image>().color = Color.coral;
+                case ScenePowerManager.Power.jellyVision:
+                    jellyBtn.GetComponent<Image>().color = Color.coral;
+                    break;
+                case ScenePowerManager.Power.flyingPower:
+                    flyBtn.GetComponent<Image>().color = Color.coral;
+                    break;
+                case ScenePowerManager.Power.sizeManipulationPower:
+                    scaleBtn.GetComponent<Image>().color = Color.coral;
+                    break;
+                default:
+                    break;
             }
-            else {
-                scaleBtn.GetComponent<Image>().color = Color.coral;
-            }
+            
             // Add onclick events
             jellyBtn.GetComponent<Button>().onClick.AddListener( () => {
                 jellyBtn.GetComponent<Image>().color = Color.coral;
                 flyBtn.GetComponent <Image>().color = Color.white;
                 scaleBtn.GetComponent<Image>().color = Color.white;
-                scenePowerManager.GetComponent<ScenePowerManager>().TogglePowerTest(1);
+                scenePowerManager.GetComponent<ScenePowerManager>().SetPlayerPower(ScenePowerManager.Power.jellyVision);
             });
             flyBtn.GetComponent<Button>().onClick.AddListener(() => {
                 flyBtn.GetComponent<Image>().color = Color.coral;
                 jellyBtn.GetComponent<Image>().color = Color.white;
                 scaleBtn.GetComponent<Image>().color = Color.white;
-                scenePowerManager.GetComponent<ScenePowerManager>().TogglePowerTest(2);
+                scenePowerManager.GetComponent<ScenePowerManager>().SetPlayerPower(ScenePowerManager.Power.flyingPower);
             });
             scaleBtn.GetComponent<Button>().onClick.AddListener(() => {
                 scaleBtn.GetComponent<Image>().color = Color.coral;
                 flyBtn.GetComponent<Image>().color = Color.white;
                 jellyBtn.GetComponent<Image>().color = Color.white;
-                scenePowerManager.GetComponent<ScenePowerManager>().TogglePowerTest(3);
+                scenePowerManager.GetComponent<ScenePowerManager>().SetPlayerPower(ScenePowerManager.Power.sizeManipulationPower);
             });
         }
 

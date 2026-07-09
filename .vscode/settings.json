@@ -71,7 +71,7 @@
     "editor.formatOnType": true,
     "editor.quickSuggestions": {
         "other": true,
-        "comments": true,
+        "comments": false,
         "strings": true
     },
     "editor.hover.enabled": "on"

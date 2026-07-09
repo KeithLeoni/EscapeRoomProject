@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3541753653314392718}
   - component: {fileID: 1970515661956537170}
   - component: {fileID: 6941021409359639508}
+  - component: {fileID: -7773598405167952331}
   m_Layer: 0
   m_Name: NotePad
   m_TagString: Untagged
@@ -167,3 +168,25 @@ MonoBehaviour:
   spawnPoint: {fileID: 0}
   networkSpawner: {fileID: 0}
   maxSpawningCount: 3
+--- !u!64 &-7773598405167952331
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7658030074073371069}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: a8fbe669bb32640fa9ae0bfb1086fecb, type: 3}
