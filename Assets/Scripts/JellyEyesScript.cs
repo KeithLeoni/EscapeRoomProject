@@ -2,53 +2,57 @@ using UnityEngine;
 using Ubiq.Avatars;
 using UnityEngine.InputSystem;
 
-public class JellyEyesScript : MonoBehaviour
+public class JellyEyesScript : MonoBehaviour, GraphicsController
 {
     [Header("Setup Eyes")]
     public GameObject leftEyeSphere;
     public GameObject rightEyeSphere;
-
+    // Camera Setup
     private Camera _localCamera;
     private int _eyeHiddenLayerIndex = -1;
     private int _traceLayerIndex = -1; // Added back to track the trace layer safely
-
+    // Input action
     [Tooltip("Input Action to activate power")]
     public InputActionProperty triggerAction;
+    // Tracker of power activation
     private bool _activationStatus = false;
+    // Avatar Graphics update setup
+    private AvatarGraphicsSynchronizer _graphicsSynchronizer;
+    private string _uuidAvatar;
+
     void Start()
     {
-        // Get avatar component
-        //Ubiq.Avatars.Avatar avatarComponent = GetComponent<Ubiq.Avatars.Avatar>();
-        //if (avatarComponent == null) avatarComponent = GetComponentInParent<Ubiq.Avatars.Avatar>();
+        _localCamera = Camera.main;
+        if (_localCamera == null) _localCamera = GetComponentInChildren<Camera>();
 
-        //if (avatarComponent != null && avatarComponent.IsLocal)
-        //{
-            _localCamera = Camera.main;
-            if (_localCamera == null) _localCamera = GetComponentInChildren<Camera>();
+        _eyeHiddenLayerIndex = LayerMask.NameToLayer("LocalPlayerHidden");
+        _traceLayerIndex = LayerMask.NameToLayer("JellyTraces");
 
-            _eyeHiddenLayerIndex = LayerMask.NameToLayer("LocalPlayerHidden");
-            _traceLayerIndex = LayerMask.NameToLayer("JellyTraces");
+        // Hide eyes for the player with this power (local avatar)
+        if (_eyeHiddenLayerIndex != -1)
+        {
+            if (leftEyeSphere != null) leftEyeSphere.layer = _eyeHiddenLayerIndex;
+            if (rightEyeSphere != null) rightEyeSphere.layer = _eyeHiddenLayerIndex;
 
-            if (_eyeHiddenLayerIndex != -1)
+            if (_localCamera != null)
             {
-                if (leftEyeSphere != null) leftEyeSphere.layer = _eyeHiddenLayerIndex;
-                if (rightEyeSphere != null) rightEyeSphere.layer = _eyeHiddenLayerIndex;
-
-                if (_localCamera != null)
-                {
-                    _localCamera.cullingMask &= ~(1 << _eyeHiddenLayerIndex);
-                }
+                _localCamera.cullingMask &= ~(1 << _eyeHiddenLayerIndex);
             }
+        }
 
-            // Hide traces by default on startup for your local camera view
-            if (_traceLayerIndex != -1 && _localCamera != null)
-            {
-                _localCamera.cullingMask &= ~(1 << _traceLayerIndex);
-            }
-        //}
+        // Hide traces by default on startup for your local camera view
+        if (_traceLayerIndex != -1 && _localCamera != null)
+        {
+            _localCamera.cullingMask &= ~(1 << _traceLayerIndex);
+        }
 
-        // Start turned off
-        SetEyesActive(false);
+        // Find Graphics updater in the scene to change look of remote copies of the avatar
+        _graphicsSynchronizer = FindFirstObjectByType<AvatarGraphicsSynchronizer>();
+        if (_graphicsSynchronizer == null)
+        {
+            Debug.LogError("Graphics Synchronizer not found! Avatar Graphics will not be updated.");
+        }
+        _uuidAvatar = gameObject.GetComponent<Ubiq.Avatars.Avatar>().Peer.uuid;
     }
 
     void Update()
@@ -59,7 +63,11 @@ public class JellyEyesScript : MonoBehaviour
             _activationStatus = !_activationStatus;
             // Activate power
             ForceToggleLocalTraces(_activationStatus);
-            SetEyesActive(_activationStatus);
+            // Update graphics (i.e. eyes) of remote copies
+            if (_graphicsSynchronizer != null)
+            {
+                _graphicsSynchronizer.SendTrackMessage(_uuidAvatar, ScenePowerManager.Power.jellyVision);
+            }            
         }
     }
 
@@ -100,5 +108,13 @@ public class JellyEyesScript : MonoBehaviour
         ForceToggleLocalTraces(false);
         // Make Eye Layer visible again
         _localCamera.cullingMask |= (1 << _eyeHiddenLayerIndex);
+    }
+
+    // Update avatar graphics: this is done for the remote instances
+    public void UpdateGraphics()
+    {
+        // Change JellyEyes viibility
+        bool currentState = rightEyeSphere.activeSelf;
+        SetEyesActive(!currentState);
     }
 }
