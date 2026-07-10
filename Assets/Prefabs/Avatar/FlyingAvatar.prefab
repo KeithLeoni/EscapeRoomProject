@@ -765,45 +765,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ffdd3759c5aca4a9fe8b5a238c47d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlightController
-  moveAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Move
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: a4a537e8-4b22-494a-ae07-191141f44ca3
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  ascendAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Ascend
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 807341e2-488c-4d10-ae90-46ccc33fcd1e
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  descendAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Descend
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 47e286c0-74fc-47f9-b63a-a5f69b4b2038
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  forwardSpeed: 3
-  verticalSpeed: 2.5
-  strafeSpeed: 2
   flyPrefab: {fileID: 8264031371525662267, guid: 96ca5562b49469c40a457f7d81ca4036, type: 3}
 --- !u!1 &3953486982176208726
 GameObject:

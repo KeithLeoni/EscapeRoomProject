@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 2924733504239695242}
   - component: {fileID: 176660674473841469}
   m_Layer: 0
-  m_Name: Highlighter_pen_green
+  m_Name: GreenPen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -291,7 +291,7 @@ GameObject:
   - component: {fileID: 2445137374231703381}
   - component: {fileID: 4664290036316108276}
   m_Layer: 0
-  m_Name: Highlighter_cap_green
+  m_Name: Cap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

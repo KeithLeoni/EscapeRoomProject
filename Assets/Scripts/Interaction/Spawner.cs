@@ -3,6 +3,10 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Ubiq.Messaging;
 using Ubiq.Spawning;
+using System.Linq;
+using Ubiq.Rooms;
+using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Spawns specified element
@@ -14,57 +18,194 @@ public class Spawner : MonoBehaviour
     public GameObject objectToSpawn;
     [Tooltip("Spawning point relative to the world")]
     public Transform spawnPoint;
-    public NetworkSpawnManager networkSpawner;
-    [Tooltip("Maximum number of objects each user is allowed to spawn")]
-    public int maxSpawningCount = 3;
+
     // Setup for validity checking
-    private NetworkContext _context;
-    public ScenePowerManager.Power[] selectedPowers = { ScenePowerManager.Power.nothing, ScenePowerManager.Power.nothing, ScenePowerManager.Power.nothing };
+    // Keep track of current selection
+    private List<PaperSheet> _spawnedItems = new List<PaperSheet>();
+    private Notepad _notepadObject;
 
     void Start()
     {
-        _context = NetworkScene.Register(this);
+        // Network spawner events
+        NetworkSpawnManager.Find(this).OnSpawned.AddListener(OnObjectSpawn);
+        NetworkSpawnManager.Find(this).OnDespawned.AddListener(OnObjectDespawn);
+        _notepadObject = GetComponent<Notepad>();
+    }
+
+    /// <summary>
+    /// Allow notepad to start spawning & managing papersheets.
+    /// Additionally maximum player count is updated
+    /// </summary>
+    public void ActivatePowerSelection(int maxPlayers)
+    {
+        // Spawn first Paper Sheet
+        SpawnObject();
+    }
+
+    /// <summary>
+    /// Reset room
+    /// </summary>
+    public void DeactivatePowerSelection()
+    {
+        // Destroy all spawned items
+        for (int i = 0; i < _spawnedItems.Count; i++)
+        {
+            // Destroy GameObject
+            Destroy(_spawnedItems[i].gameObject);
+        }
+        // Empty list
+        _spawnedItems.Clear();
     }
 
     /// <summary>
     /// Spawn <see langword="object"/> with peer scope  
     /// </summary>
-    void SpawnObject(SelectEnterEventArgs args)
+    public void SpawnObject()
     {
-        // Check spwning limit
-        if (maxSpawningCount > 0)
+        GameObject spawnedObject = NetworkSpawnManager.Find(this).SpawnWithPeerScope(objectToSpawn);
+        // Change position
+        spawnedObject.transform.SetParent(null);
+        spawnedObject.transform.position = spawnPoint.position;
+    }
+
+    /// <summary>
+    /// Make object non-ineractable for local avatar
+    /// </summary>
+    private void DeactivateObjectLocally(GameObject spawnedObject)
+    {
+        // Disable all interactable components of this object locally
+        Collider[] colliders = spawnedObject.GetComponents<BoxCollider>();
+        foreach (var collider in colliders)
         {
-            GameObject spawnedObject = NetworkSpawnManager.Find(this).SpawnWithPeerScope(objectToSpawn);
-            // Change position
-            spawnedObject.transform.SetParent(null);
-            spawnedObject.transform.position = spawnPoint.position;
-            maxSpawningCount -= 1;
+            collider.enabled = false;
         }
+    }
+
+    /// <summary>
+    /// Update spawned objects list
+    /// </summary>
+    private void OnObjectSpawn(GameObject arg0, IRoom arg1, IPeer arg2, NetworkSpawnOrigin arg3)
+    {
+        // Update list
+        _spawnedItems.Add(arg0.GetComponent<PaperSheet>());
+        // Check: did local avatar already claimed a paper sheet?
+        PaperSheet claimedObject = FindLocalSpawnedObj();
+        if (claimedObject != null)
+        {
+            DeactivateObjectLocally(arg0);
+        }
+    }
+
+    /// <summary>
+    /// Update spawned objects list
+    /// </summary>
+    private void OnObjectDespawn(GameObject arg0, IRoom arg1, IPeer arg2)
+    {
+        // Update list
+        _spawnedItems.Remove(arg0.GetComponent<PaperSheet>());
+    }
+
+    /// <summary>
+    /// Returns PaperSheet component owned by avatar with given uuid from the array
+    /// of spawned objects in the scene. Returns null if nothing is found
+    /// </summary>
+    /// <param name="uuid"></param>
+    /// <returns></returns>
+    private PaperSheet FindSpawnedObjByUuid(string uuid)
+    {
+        for (int i = 0; i < _spawnedItems.Count; i++)
+        {
+            if (_spawnedItems[i].owner == uuid)
+            {
+                return _spawnedItems[i];
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Find Spawned object in scene that belongs to local avatar.
+    /// </summary>
+    /// <returns>null, if there is no spawned object claimed by the local avatar</returns>
+    private PaperSheet FindLocalSpawnedObj()
+    {
+        for (int i = 0; i < _spawnedItems.Count; i++)
+        {
+            if (_spawnedItems[i].isLocal)
+            {
+                return _spawnedItems[i];
+            }
+        }
+        return null;
     }
 
     // ----------------------------------------
     // Network control
-    
-    // Message to synchronize selected powers across all copies
-    private struct UpdateMsg
+
+    public void SendUpdateMessage()
     {
-        public ScenePowerManager.Power power;
-        public string paperOwner;
-    }
-    private void SendMessage(ScenePowerManager.Power selectedPower, string owner)
-    {
-        var message = new UpdateMsg();
-        message.power = selectedPower;
-        message.paperOwner = owner;
-        _context.SendJson(message);
+        // First Update Local State
+        PaperSheet localObj = FindLocalSpawnedObj();
+        UpdateLocalState(localObj);
+        // Send network messages
+        _notepadObject.SendUpdateMessage(localObj.selectedPower, localObj.owner);
     }
 
-    public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
+    /// <summary>
+    /// Checks if power selection has any conflicts (i.e if anyone has chosen the same power),
+    /// given the new power selection.
+    /// Updates all conflict status and returns true if conflict involves the local avatar's
+    /// component
+    /// </summary>
+    public bool IsSelectionValid(PaperSheet componentToUpdate)
     {
-        // Parse message
-        var m = message.FromJson<UpdateMsg>();
-        // Update status
-        //selectedPowers
+        bool isValid = true;
+        foreach (var selection in _spawnedItems)
+        {
+            // Check if they have the same selection
+            if (selection.selectedPower == componentToUpdate.selectedPower
+            && selection.owner != componentToUpdate.owner)
+            {
+                // Update conflict status locally
+                selection.validityStatus = false;
+                // Update validity status
+                if (selection.isLocal)
+                {
+                    isValid = false;
+                }
+            }
+        }
+        return isValid;
+    }
+
+    public void ProcessMessage(ScenePowerManager.Power power, string paperOwner)
+    {
+        // Update status of selected powers
+        PaperSheet componentToUpdate = FindSpawnedObjByUuid(paperOwner);
+        if (componentToUpdate == null)
+        {
+            // Error log
+            Debug.LogError("PaperSheet component to update not found in local scene!");
+            return;
+        }
+        // Update values
+        componentToUpdate.selectedPower = power;
+        componentToUpdate.owner = paperOwner;
+
+        UpdateLocalState(componentToUpdate);
+    }
+
+    /// <summary>
+    /// Checks selection validity and displays local warning
+    /// </summary>
+    private void UpdateLocalState(PaperSheet componentToUpdate)
+    {
+        // Start validity checking
+        if (!(IsSelectionValid(componentToUpdate)))
+        {
+            // TODO: Display warning for local copy only
+            Debug.Log("CONFLICT DETECTED");
+        }
     }
 
 }

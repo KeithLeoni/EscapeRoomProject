@@ -119,7 +119,7 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
     // Update avatar graphics: this is done for the remote instances
     public void UpdateGraphics()
     {
-        // Change JellyEyes viibility
+        // Change JellyEyes visibility
         bool currentState = rightEyeSphere.activeSelf;
         SetEyesActive(!currentState);
     }

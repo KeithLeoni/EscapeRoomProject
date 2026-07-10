@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SpawnableObjectsCatalogue
   m_EditorClassIdentifier: Ubiq::Ubiq.Spawning.PrefabCatalogue
   prefabs:
-  - {fileID: 6323727010257882373, guid: 7bde82c037512bf4aa996fe7cd00177f, type: 3}
+  - {fileID: 7349285786170899130, guid: a11065ac96cc8994ba5e83e113f7b05c, type: 3}

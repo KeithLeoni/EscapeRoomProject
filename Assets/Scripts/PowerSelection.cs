@@ -1,6 +1,8 @@
 using UnityEngine;
 using Ubiq.Rooms;
-using Ubiq.Messaging;
+using Unity.XR.CoreUtils;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using System.Collections.Generic;
 
 /// <summary>
 /// This component handles the power selection portion of the game.
@@ -11,51 +13,48 @@ namespace Ubiq.Samples
     {
         [Tooltip("Ubiq main panel object")]
         public SocialMenu mainMenu;
-        public Transform XROrigin;
         // Track people in rooom
-        private string[] _peersInRoom = { "", "", "" };
-        private CharacterController _characterController;
-        // Synchronize player availability with other copies
-        NetworkContext context;
-        // Keep track of room owner
-        private string _roomOwner = "";
+        private List<string> _peersInRoom = new List<string>();
+        private int _maxPlayers = 3;
+        public Spawner notepad;
+        // All highlighter objects
+        public List<GameObject> markers = new List<GameObject>();
 
         void Start()
         {
-            _characterController = XROrigin.gameObject.GetComponent<CharacterController>();
-            if (_characterController == null)
-            {
-                Debug.LogWarning("Character Controller not found in the hierchy");
-            }
-            // Network
-            context = NetworkScene.Register(this);
-
             mainMenu.roomClient.OnJoinedRoom.AddListener(OnJoin);
             // When someone joins your room, send message to tell them which spawn point is available
-            mainMenu.roomClient.OnPeerAdded.AddListener(SendRoomAvailability);
-            mainMenu.roomClient.OnPeerRemoved.AddListener(UpdatePeers);
+            mainMenu.roomClient.OnPeerAdded.AddListener(AddPeer);
+            mainMenu.roomClient.OnPeerRemoved.AddListener(RemovePeer);
+
+            if (notepad == null)
+            {
+                notepad = FindAnyObjectByType<Spawner>();
+            }
+
+            if (markers.Count < _maxPlayers)
+            {
+                // Find markers
+                markers.Clear();
+                markers.Add(GameObject.Find("BlueHighlighter").GetNamedChild("BluePen"));
+                markers.Add(GameObject.Find("GreenHighlighter").GetNamedChild("GreenPen"));
+                markers.Add(GameObject.Find("PinkHighlighter").GetNamedChild("PinkPen"));
+            }
+            // Highlighters: make them un-grabbable at first
+            ToggleMarkers(false);
         }
 
         /// <summary>
-        /// When a peer leaves, the room owner updates which spot has been freed
+        /// Disable/Enable interaction with highlighters
         /// </summary>
-        void UpdatePeers(IPeer peer)
+        private void ToggleMarkers(bool activationStatus)
         {
-            // Update room availability (only the owner)
-            if (mainMenu.roomClient.Me.uuid == _roomOwner)
+            foreach (var item in markers)
             {
-                // Find spot to free
-                for (int i = 0; i < _peersInRoom.Length; i++)
-                {
-                    if (_peersInRoom[i] == peer.uuid)
-                    {
-                        _peersInRoom[i] = "";
-                        break;
-                    }
-                }
+                item.GetComponent<XRGrabInteractable>().enabled = activationStatus;
             }
-        }
-
+        }        
+        
         /// <summary>
         /// When a client joins a room, enter power selection mode
         /// </summary>
@@ -64,86 +63,72 @@ namespace Ubiq.Samples
         {
             if (!room.Publish)
             {
-                // Non-shared room
-                _roomOwner = "";
+                // Non-shared room, reset peers
+                ResetPeers();
+                // Reset notepad state
+                notepad.DeactivatePowerSelection();
+                ToggleMarkers(false);
             }
             else
             {
-                // Only enter selection mode if user is the room creator
-                // Wait for room owner to be set 
-                if (mainMenu.roomClient.Me.uuid == _roomOwner)
+                // Joined or created a shared room 
+                // Is room full?
+                bool rejectedJoin = IsRoomFull();
+                if (rejectedJoin)
                 {
-                    EnterPowerSelection(0);
-                    // Occupy spot
-                    _peersInRoom[0] = _roomOwner;
-
+                    // Kick out player
+                    mainMenu.roomClient.Join("", false);
+                    return;
                 }
+                // Enter Selection Mode: i.e. activate notepad functionalities
+                notepad.ActivatePowerSelection(_maxPlayers);
+                ToggleMarkers(true);
             }
+        }
+
+        private void AddPeer(IPeer arg0)
+        {
+            AddPeer(arg0.uuid);
+        }
+        
+        private void RemovePeer (IPeer arg0)
+        {
+            _peersInRoom.Remove(arg0.uuid);
+        }
+
+
+        // ---------------------------------------------------------------
+
+        /// <summary>
+        /// Reset peers list
+        /// </summary>
+        private void ResetPeers()
+        {
+            _peersInRoom.Clear();
         }
 
         /// <summary>
-        ///  Transport player in chair and activate relevant components for power selection  
+        /// It returns true if there are already the maximum amount of
+        /// allowed players in room.
         /// </summary>
-        void EnterPowerSelection(int spawnIndex)
+        private bool IsRoomFull()
         {
+            return _peersInRoom.Count == _maxPlayers;
         }
 
         /// <summary>
-        /// Ubiq message struct for synchronization
+        /// Adds peer to _peersInRoom, but only if the array is not full.
         /// </summary>
-        private struct TrackMsg
+        /// <returns>True if peer was added</returns>
+        private bool AddPeer(string uuid)
         {
-            // An index of a free spawn point in the room
-            public int freeSpawnPoint;
-            // Pass UUID of room owner
-            public string roomOwner;
-        }
-
-        // Send room availability
-        private void SendRoomAvailability(IPeer peer)
-        {
-            if (mainMenu.roomClient.Me.uuid == _roomOwner)
+            if (_peersInRoom.Count < _maxPlayers)
             {
-                // Only the owner sends the available spots
-                var message = new TrackMsg();
-                int freeSpot = -1;
-                for (int i = 0; i < _peersInRoom.Length; i++)
-                {
-                    if (_peersInRoom[i] == "")
-                    {
-                        freeSpot = i;
-                        // Update room availability
-                        _peersInRoom[i] = peer.uuid;
-                        break;
-                    }
-                }
-                message.freeSpawnPoint = freeSpot;
-                message.roomOwner = mainMenu.roomClient.Me.uuid;
-                context.SendJson(message);
+                _peersInRoom.Add(uuid);
+                return true;
             }
+            return false;
         }
-
-        // Network Ubiq: track rotation & position of grabbable objects
-        public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
-        {
-            // Parse message
-            var m = message.FromJson<TrackMsg>();
-            // Update room owner string & check for free spots
-            if (m.freeSpawnPoint != -1)
-            {
-                // A spot is available: teleport user to the correct place
-                EnterPowerSelection(m.freeSpawnPoint);
-                _roomOwner = m.roomOwner;
-            }
-            else
-            {
-                // Kick out user
-            }
-        }
-
-        public void SetSelfAsOwner()
-        {
-            _roomOwner = mainMenu.roomClient.Me.uuid;
-        }
+        
     }
 }

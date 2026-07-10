@@ -13,11 +13,18 @@ using Ubiq.Spawning;
 public class PaperSheet : MonoBehaviour, INetworkSpawnable
 {
     public NetworkId NetworkId { get; set; }
-    private NetworkContext _context;
     // Only who is the owner of the object can pick it up
-    private string _owner = "";
-    public ScenePowerManager.Power selectedPower { get; private set; } = ScenePowerManager.Power.nothing;
+    public string owner = "";
+    public ScenePowerManager.Power selectedPower = ScenePowerManager.Power.nothing;
+    // Is current selection Valid?
+    public bool validityStatus = false;
+    public bool isLocal { get; private set; } = false;
+    public Spawner notepad;
+
+    // Audio Setting
     private AudioSource _audioSource;
+    public AudioClip rippingSoundEffect;
+    public AudioClip writingSoundEffect;
 
     void Start()
     {
@@ -28,35 +35,41 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
         gameObject.GetComponent<XRGrabInteractable>().selectEntered.AddListener(SetOwner);
         // Modify Grab Behaviour: Once the page is "torn" from the notepad it is a physical object
         gameObject.GetComponent<XRGrabInteractable>().selectExited.AddListener(EnableGravity);
-        // Network
-        _context = NetworkScene.Register(this);
+        // Initially disable drawing interaction
+        ToggleDrawingInteraction(false);
         _audioSource = GetComponent<AudioSource>();
-        // Initially disable interactable for highlighters
-        Collider[] colliders = GetComponents<BoxCollider>();
-        foreach (var collider in colliders)
+
+        // Network ------------------------------------------
+        if (notepad == null)
         {
-            if (collider.isTrigger)
-            {
-                // Found right collider
-                collider.enabled = false;
-                break;
-            }
+            notepad = FindAnyObjectByType<Spawner>();
         }
     }
 
-    void SetOwner(SelectEnterEventArgs args)
+    /// <summary>
+    /// Enabl/Disable interactable components for drawing
+    /// </summary>
+    /// <param name="activationStatus"></param>
+    private void ToggleDrawingInteraction(bool activationStatus)
     {
-        // Enable collider        
+        // Find collider        
         Collider[] colliders = GetComponents<BoxCollider>();
         foreach (var collider in colliders)
         {
             if (collider.isTrigger)
             {
                 // Found right collider
-                collider.enabled = true;
+                collider.enabled = activationStatus;
                 break;
             }
         }
+
+    }
+
+    private void SetOwner(SelectEnterEventArgs args)
+    {
+        // Enable drawing interaction
+        ToggleDrawingInteraction(true);
 
         // Find Local Avatar
         GameObject avatarManager = FindFirstObjectByType<AvatarManager>().gameObject;
@@ -65,46 +78,22 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
         {
             if (avatar.IsLocal)
             {
-                _owner = avatar.Peer.uuid;
+                owner = avatar.Peer.uuid;
                 break;
             }
         }
+
         // Play page ripping sound
-        _audioSource.Play();
-        // Communicate to all remote copies that no other user can interact with this piece of paper
+        _audioSource.PlayOneShot(rippingSoundEffect);
+        isLocal = true;
+        // Spawn next object
+        notepad.SpawnObject();
+
         // TO DO: ADD USER'S NAME ON PAPER SO IT IS LESS CONFUSING
-        SendMessage();
         gameObject.GetComponent<XRGrabInteractable>().selectEntered.RemoveListener(SetOwner);
     }
-    
+
     // -----------------------------------------------------------
-    
-    // Send grab tracking message to release object
-
-    private struct TrackOwnerMsg
-    {
-        public string owner;
-    }
-    private void SendMessage()
-    {
-        var message = new TrackOwnerMsg();
-        message.owner = _owner;
-        _context.SendJson(message);
-    }
-
-    public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
-    {
-        // Parse message
-        var m = message.FromJson<TrackOwnerMsg>();
-        // Remove grab element for all other copies
-        Collider[] colliders = GetComponents<BoxCollider>();
-        foreach (var collider in colliders)
-        {
-            Destroy(collider);
-        }
-        // Set owner
-        _owner = m.owner;
-    }
 
     void EnableGravity(SelectExitEventArgs args)
     {
@@ -115,8 +104,10 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
     // Define Drawing collider behaviour
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.EndsWith("Highlighter"))
+        if (other.gameObject.name.EndsWith("Pen"))
         {
+            // Play sound effect
+            _audioSource.PlayOneShot(writingSoundEffect);
             // Check which highlighter it is
             if (other.gameObject.name.StartsWith("Blue"))
             {
@@ -125,15 +116,19 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
                 selectedPower = ScenePowerManager.Power.flyingPower;
                 Debug.Log("Fly Selected");
 
-            } else if (other.gameObject.name.StartsWith("Pink"))
+            }
+            else if (other.gameObject.name.StartsWith("Pink"))
             {
                 selectedPower = ScenePowerManager.Power.sizeManipulationPower;
                 Debug.Log("Size Selected");
-            } else if (other.gameObject.name.StartsWith("Green"))
+            }
+            else if (other.gameObject.name.StartsWith("Green"))
             {
                 selectedPower = ScenePowerManager.Power.jellyVision;
                 Debug.Log("Jelly Selected");
             }
         }
+        // Communicate with notepad to coordinate remote copies
+        notepad.SendUpdateMessage();
     }
 }
