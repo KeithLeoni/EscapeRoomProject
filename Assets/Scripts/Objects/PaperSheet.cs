@@ -4,6 +4,8 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit;
 using Ubiq.Avatars;
 using Ubiq.Spawning;
+using TMPro;
+using Unity.XR.CoreUtils;
 
 /// <summary>
 /// Paper Sheet behaviour:
@@ -74,11 +76,14 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
         // Find Local Avatar
         GameObject avatarManager = FindFirstObjectByType<AvatarManager>().gameObject;
         Ubiq.Avatars.Avatar[] avatars = avatarManager.GetComponentsInChildren<Ubiq.Avatars.Avatar>();
+        // Save avatar's name
+        string name = "";
         foreach (var avatar in avatars)
         {
             if (avatar.IsLocal)
             {
                 owner = avatar.Peer.uuid;
+                name = avatarManager.GetComponent<AvatarManager>().RoomClient.Me["ubiq.displayname"];
                 break;
             }
         }
@@ -89,7 +94,13 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
         // Spawn next object
         notepad.SpawnObject();
 
-        // TO DO: ADD USER'S NAME ON PAPER SO IT IS LESS CONFUSING
+        // Set Text
+        GameObject textObject = gameObject.GetNamedChild("Text");
+        TextMeshPro text = textObject.GetComponent<TextMeshPro>();
+        Debug.Log(text);
+        text.text = name + "'s Hero";
+        text.enabled = true;
+
         gameObject.GetComponent<XRGrabInteractable>().selectEntered.RemoveListener(SetOwner);
     }
 

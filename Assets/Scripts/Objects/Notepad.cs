@@ -1,11 +1,5 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Ubiq.Messaging;
-using Ubiq.Spawning;
-using System.Linq;
-using Ubiq.Rooms;
-using System;
 
 /// <summary>
 /// Spawns specified element

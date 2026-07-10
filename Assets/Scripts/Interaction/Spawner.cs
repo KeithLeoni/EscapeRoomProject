@@ -1,11 +1,7 @@
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Ubiq.Messaging;
 using Ubiq.Spawning;
-using System.Linq;
 using Ubiq.Rooms;
-using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -175,6 +171,8 @@ public class Spawner : MonoBehaviour
                 }
             }
         }
+        // Update validity status for componentToUpdate
+        componentToUpdate.validityStatus = isValid;
         return isValid;
     }
 
@@ -205,6 +203,7 @@ public class Spawner : MonoBehaviour
         {
             // TODO: Display warning for local copy only
             Debug.Log("CONFLICT DETECTED");
+            return;
         }
     }
 
