@@ -5,7 +5,7 @@ public class CauldronScript : MonoBehaviour
     // Potion ingredients
     private bool potionGreen, potionRed, ivyLeaf = false;    
     public GameObject magicInkPrefab;
-    [SerializeField] private float spawnHeightOffset = 0.5f; // y offset
+    [SerializeField] private float spawnHeightOffset = 0.2f; // y offset
     private GameObject magicInk;
     private bool hasSpawned = false; // this prevents ink from spawingin more than once
 
@@ -37,7 +37,7 @@ public class CauldronScript : MonoBehaviour
                 potionRed = true;
                 Destroy(col.gameObject);
             }
-        else if(col.gameObject.name == "PuzzlePotionIvyLeaf")
+        else if(col.gameObject.name.Contains("IvyLeaf"))
             {
                 ivyLeaf = true;
                 Destroy(col.gameObject);

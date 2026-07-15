@@ -21,6 +21,10 @@ public class Chest : MonoBehaviour
     [Space]
     public GameObject keyObject;
 
+    // Script to handle cat dialogue
+    private CatSpeech _catSpeechScript;
+
+
     void Start()
     {
         // Get Lock
@@ -29,6 +33,10 @@ public class Chest : MonoBehaviour
         _rotationPoint = gameObject.GetNamedChild("PivotPoint").transform.position;
         _finalRotationTarget = Quaternion.Euler(240f, 0, 0);
         _isOpening = false;
+
+        // Cat dialogue script
+        _catSpeechScript = FindFirstObjectByType<CatSpeech>();
+
     }
 
     void Update()
@@ -92,5 +100,7 @@ public class Chest : MonoBehaviour
         Invoke(nameof(KeyFall), 0.5f);
         // Activate mesh collider and deactivate sphere collider
         Invoke(nameof(LockFall), 1.0f);
+
+        _catSpeechScript.Say("You did it!", 0);
     }
 }
