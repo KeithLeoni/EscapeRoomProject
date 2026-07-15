@@ -13,7 +13,7 @@ public class FireplaceLight : MonoBehaviour
         StartCoroutine(Flickering());
     }
 
-    // Update is called once per frame
+    // Function to make the fireplace light flicker
     IEnumerator Flickering()
     {
         while (true)
