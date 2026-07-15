@@ -3,6 +3,7 @@ using Ubiq.Rooms;
 using Unity.XR.CoreUtils;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using System.Collections.Generic;
+using TMPro;
 
 /// <summary>
 /// This component handles the power selection portion of the game.
@@ -16,9 +17,14 @@ namespace Ubiq.Samples
         // Track people in rooom
         private List<string> _peersInRoom = new List<string>();
         private int _maxPlayers = 3;
+
+        // Objects needed for power selection
         public Spawner notepad;
+        public StoryBook storyBook;
         // All highlighter objects
         public List<GameObject> markers = new List<GameObject>();
+        // Dialogue to set as active
+        public GameObject[] promptInstructions;
 
         void Start()
         {
@@ -30,6 +36,11 @@ namespace Ubiq.Samples
             if (notepad == null)
             {
                 notepad = FindAnyObjectByType<Spawner>();
+            }
+
+            if (storyBook == null)
+            {
+                storyBook = FindAnyObjectByType<StoryBook>();
             }
 
             if (markers.Count < _maxPlayers)
@@ -53,8 +64,25 @@ namespace Ubiq.Samples
             {
                 item.GetComponent<XRGrabInteractable>().enabled = activationStatus;
             }
-        }        
-        
+        }
+
+        /// <summary>
+        /// Hide/Show instructions in room for power selection
+        /// </summary>
+        private void ToggleInstructions(bool activationStatus)
+        {
+            foreach (var instructions in promptInstructions)
+            {
+                instructions.SetActive(activationStatus);
+                // For the book instruction reset color & text
+                if (instructions.name == "PromptInstruction2")
+                {
+                    instructions.GetComponent<TextMeshPro>().color = new Color(255, 0, 225);
+                    instructions.GetComponent<TextMeshPro>().text = "When you are ready, place your drawing here!";
+                }
+            }
+        }
+
         /// <summary>
         /// When a client joins a room, enter power selection mode
         /// </summary>
@@ -65,9 +93,11 @@ namespace Ubiq.Samples
             {
                 // Non-shared room, reset peers
                 ResetPeers();
-                // Reset notepad state
+                // Reset everithing in the room
                 notepad.DeactivatePowerSelection();
+                storyBook.ResetStatus();
                 ToggleMarkers(false);
+                ToggleInstructions(false);
             }
             else
             {
@@ -83,6 +113,7 @@ namespace Ubiq.Samples
                 // Enter Selection Mode: i.e. activate notepad functionalities
                 notepad.ActivatePowerSelection(_maxPlayers);
                 ToggleMarkers(true);
+                ToggleInstructions(true);
             }
         }
 
@@ -90,8 +121,8 @@ namespace Ubiq.Samples
         {
             AddPeer(arg0.uuid);
         }
-        
-        private void RemovePeer (IPeer arg0)
+
+        private void RemovePeer(IPeer arg0)
         {
             _peersInRoom.Remove(arg0.uuid);
         }
@@ -129,6 +160,6 @@ namespace Ubiq.Samples
             }
             return false;
         }
-        
+
     }
 }

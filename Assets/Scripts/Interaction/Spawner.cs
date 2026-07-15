@@ -172,7 +172,7 @@ public class Spawner : MonoBehaviour
             }
         }
         // Update validity status for componentToUpdate
-        componentToUpdate.validityStatus = isValid;
+        componentToUpdate.validityStatus = (isValid && (componentToUpdate.selectedPower!=ScenePowerManager.Power.nothing));
         return isValid;
     }
 

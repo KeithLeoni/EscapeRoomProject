@@ -1,14 +1,13 @@
 using UnityEngine;
-using Ubiq.Messaging;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit;
-using Ubiq.Avatars;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
-using UnityEngine.XR.Interaction.Toolkit.Filtering;
+using TMPro;
+using Ubiq.Messaging;
 
 /// <summary>
 /// </summary>
-public class StoryBook : MonoBehaviour, IXRHoverFilter
+public class StoryBook : MonoBehaviour
 {
     // Audio Setting
     private AudioSource _audioSource;
@@ -17,14 +16,67 @@ public class StoryBook : MonoBehaviour, IXRHoverFilter
     private int _paperLayer;
     // How many players confirmed their choice
     private int _confirmedChoices = 0;
+    // If local user has confirmed their choice
+    private bool _hasConfirmed = false;
     private ScenePowerManager _powerManager;
     private GameObject _objectToDisable;
+    private GameObject _rejectionSymbol;
+    private GameObject _acceptionSymbol;
+    // Text colors
+    private TextMeshPro _instructionsText;
+    private NetworkContext _context;
 
     void Start()
     {
+        _context = NetworkScene.Register(this);
         _paperLayer = LayerMask.NameToLayer("Paper");
         GetComponent<XRSocketInteractor>().selectEntered.AddListener(ConfirmChoice);
+        GetComponent<XRSocketInteractor>().hoverEntered.AddListener(OnHoverEnter);
+        GetComponent<XRSocketInteractor>().hoverExited.AddListener(OnHoverExit);
         _powerManager = FindFirstObjectByType<ScenePowerManager>();
+        Canvas[] canvasElements = gameObject.GetComponentsInChildren<Canvas>(true);
+        foreach (var item in canvasElements)
+        {
+            if (item.gameObject.name == "AcceptSymbol")
+            {
+                _acceptionSymbol = item.gameObject;
+            }
+            else
+            {
+                _rejectionSymbol = item.gameObject;
+            }
+        }
+        // Find instructions
+        _instructionsText = gameObject.GetComponentInChildren<TextMeshPro>(true);
+    }
+
+    private void OnHoverEnter(HoverEnterEventArgs arg0)
+    {
+        bool isValidSelection = arg0.interactableObject.transform.gameObject.GetComponent<PaperSheet>().validityStatus;
+        // Stop snapping
+        GetComponent<XRSocketInteractor>().allowSelect = isValidSelection;
+        if (!isValidSelection)
+        {
+            ToggleWarning(true);
+        }
+        else
+        {
+            _acceptionSymbol.SetActive(true);
+        }
+    }
+
+    private void OnHoverExit(HoverExitEventArgs arg0)
+    {
+        // Reset
+        bool isValidSelection = arg0.interactableObject.transform.gameObject.GetComponent<PaperSheet>().validityStatus;
+        if (!isValidSelection)
+        {
+            ToggleWarning(false);
+        }
+        else
+        {
+            _acceptionSymbol.SetActive(false);
+        }
     }
 
     // When you snap the piece of paper: make piece of paper non-grabbable & kinematic
@@ -39,9 +91,18 @@ public class StoryBook : MonoBehaviour, IXRHoverFilter
         }
         // Update choice confirmation
         _confirmedChoices += 1;
+        _hasConfirmed = true;
+        // Sync this variable
+        SendUpdateMessage();
+
+        // Update text
+        _instructionsText.text = "Wait for your friends.\n" + _confirmedChoices + "/3";
+        _instructionsText.color = new Color(20, 172, 60);
+        _acceptionSymbol.SetActive(false);
+
         // Delay disabling so that object has time to be snapped into place
         _objectToDisable = paper;
-        Invoke(nameof(DisableSnappedPaper), 0.5f );
+        Invoke(nameof(DisableSnappedPaper), 0.5f);
         // Set local power in power manager
         _powerManager.SetPlayerPower(paper.GetComponent<PaperSheet>().selectedPower);
         // Invoke Teleportation
@@ -51,10 +112,10 @@ public class StoryBook : MonoBehaviour, IXRHoverFilter
         }
     }
 
-    private void DisableSnappedPaper(GameObject paper)
+    private void DisableSnappedPaper()
     {
         _objectToDisable.GetComponent<Rigidbody>().isKinematic = true;
-        Destroy(_objectToDisable.GetComponent<XRGrabInteractable>());
+        _objectToDisable.GetComponent<XRGrabInteractable>().enabled = false;
         _objectToDisable = null;
     }
 
@@ -65,18 +126,60 @@ public class StoryBook : MonoBehaviour, IXRHoverFilter
         // Teleport all
     }
 
-    // Before snapping add another validation factor
-    public bool Process(IXRHoverInteractor interactor, IXRHoverInteractable interactable)
+    private void ToggleWarning(bool visibility)
     {
-        bool isValidSelection = interactable.transform.gameObject.GetComponent<PaperSheet>().validityStatus;
-        // Stop snapping
-        GetComponent<XRSocketInteractor>().allowSelect = isValidSelection;
-        Debug.Log(isValidSelection);
+        _rejectionSymbol.SetActive(visibility);
+        // Control Text
+        if (!visibility)
+        {
+            _instructionsText.color = new Color(255, 0, 225);
+            // Reset text
+            _instructionsText.text = "When you are ready, place your drawing here!";
+        }
+        else
+        {
+            _instructionsText.color = new Color(162, 0, 0);
+            _instructionsText.text = "You have to pick something and you cannot pick the same powers as your friends :<";
+        }
 
-        // TODO: ADD CONFLICT OR INVALID STATUS WARNING (GRAPHICALLY)
-        return isValidSelection;
     }
 
-    public bool canProcess => isActiveAndEnabled;
+    /// <summary>
+    /// Reset all variables to pre-selection status
+    /// </summary>
+    public void ResetStatus()
+    {
+        _hasConfirmed = false;
+        _confirmedChoices = 0;
+    }
+
+    // ----------------------------------------
+    // Network control
+
+    // Message to synchronize who confirmed their selection
+    private struct ConfirmMsg
+    {
+        public string randVar;
+    }
+
+    public void SendUpdateMessage()
+    {   // Propagate Update on network
+        var message = new ConfirmMsg();
+        message.randVar = "";
+        _context.SendJson(message);
+    }
+
+    public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
+    {
+        // Parse message
+        var m = message.FromJson<ConfirmMsg>();
+        // A usre confirmed their selection
+        _confirmedChoices += 1;
+        // Update Text if user has confirmed their choice
+        if (_hasConfirmed)
+        {
+            _instructionsText.text = "Wait for your friends.\n" + _confirmedChoices + "/3";
+        }
+    }
 
 }

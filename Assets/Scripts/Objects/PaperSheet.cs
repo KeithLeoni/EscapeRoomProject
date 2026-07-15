@@ -26,12 +26,9 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
     // Audio Setting
     private AudioSource _audioSource;
     public AudioClip rippingSoundEffect;
-    public AudioClip writingSoundEffect1;
-    public AudioClip writingSoundEffect2;
-    public AudioClip writingSoundEffect3;
 
     // Marker drawing settings
-    private bool _hasEntered = false;
+    private GameObject _drawableArea;
 
     void Start()
     {
@@ -42,6 +39,8 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
         gameObject.GetComponent<XRGrabInteractable>().selectEntered.AddListener(SetOwner);
         // Modify Grab Behaviour: Once the page is "torn" from the notepad it is a physical object
         gameObject.GetComponent<XRGrabInteractable>().selectExited.AddListener(EnableGravity);
+        // Get drawable area
+        _drawableArea = gameObject.GetNamedChild("DrawableSurface");
         // Initially disable drawing interaction
         ToggleDrawingInteraction(false);
         _audioSource = GetComponent<AudioSource>();
@@ -60,17 +59,8 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
     private void ToggleDrawingInteraction(bool activationStatus)
     {
         // Find collider        
-        Collider[] colliders = GetComponents<BoxCollider>();
-        foreach (var collider in colliders)
-        {
-            if (collider.isTrigger)
-            {
-                // Found right collider
-                collider.enabled = activationStatus;
-                break;
-            }
-        }
-
+        Collider collider = _drawableArea.GetComponent<BoxCollider>();
+        collider.enabled = activationStatus;
     }
 
     private void SetOwner(SelectEnterEventArgs args)
@@ -102,7 +92,6 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
         // Set Text
         GameObject textObject = gameObject.GetNamedChild("Text");
         TextMeshPro text = textObject.GetComponent<TextMeshPro>();
-        Debug.Log(text);
         text.text = name + "'s Hero";
         text.enabled = true;
 
@@ -117,52 +106,4 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
         gameObject.GetComponent<XRGrabInteractable>().selectExited.RemoveListener(EnableGravity);
     }
 
-    // Define Drawing collider behaviour
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.name.EndsWith("Pen") && !_hasEntered)
-        {
-            // Check that marker is being grabbed
-            XRGrabInteractable interactable = other.gameObject.GetComponent<XRGrabInteractable>();
-            if (interactable == null || !interactable.isSelected)
-            {
-                // Marker is not being grabbed
-                return;
-            }
-            _hasEntered = true;
-            // Check which highlighter it is
-            if (other.gameObject.name.StartsWith("Blue"))
-            {
-                // Play sound effect
-                _audioSource.PlayOneShot(writingSoundEffect1);
-                // Assign right material
-                // Register selected power
-                selectedPower = ScenePowerManager.Power.flyingPower;
-                Debug.Log("Fly Selected");
-
-            }
-            else if (other.gameObject.name.StartsWith("Pink"))
-            {
-                // Play sound effect
-                _audioSource.PlayOneShot(writingSoundEffect2);
-                selectedPower = ScenePowerManager.Power.sizeManipulationPower;
-                Debug.Log("Size Selected");
-            }
-            else if (other.gameObject.name.StartsWith("Green"))
-            {
-                // Play sound effect
-                _audioSource.PlayOneShot(writingSoundEffect3);
-                selectedPower = ScenePowerManager.Power.jellyVision;
-                Debug.Log("Jelly Selected");
-            }
-        }
-        // Communicate with notepad to coordinate remote copies
-        notepad.SendUpdateMessage();
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        // Reset variable
-        _hasEntered = false;
-    }
 }
