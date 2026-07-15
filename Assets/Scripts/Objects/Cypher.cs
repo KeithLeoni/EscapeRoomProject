@@ -19,6 +19,10 @@ public class Cypher : MonoBehaviour
     // only track state while grabbing
     private int _prevSector = 0;
 
+    // Script to handle cat dialogue
+    private CatSpeech _catSpeechScript;
+    private bool _talked = false;
+
     void Start()
     {
         // Enable Knob interactable only if object is being grabbed
@@ -32,6 +36,10 @@ public class Cypher : MonoBehaviour
         _knobInteractable = gameObject.GetNamedChild("Inner").GetComponent<XRKnob>();
         _knobInteractable.selectEntered.AddListener(StartTracking);
         _knobInteractable.selectExited.AddListener(StopTracking);
+
+        // Cat dialogue script
+        _catSpeechScript = FindFirstObjectByType<CatSpeech>();
+
     }
 
 
@@ -41,6 +49,11 @@ public class Cypher : MonoBehaviour
         gameObject.GetComponent<BoxCollider>().enabled = false;
         // Activate knob interactable
         _knobCollider.enabled = true;
+
+        if (!_talked)
+        {
+            _catSpeechScript.Say("I have never seen that, but I think they are instructions to a new device he just bought… he spends too much money on silly stuff if you ask me…", 0);
+        }
     }
 
     void OnDeselect(SelectExitEventArgs args)
