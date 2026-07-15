@@ -205,13 +205,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3210652456515850487}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.48}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: -0.000000074241854, y: 0, z: 0.47999725}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8676655361978256897}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &7349285786170899130
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,4 +630,6 @@ MonoBehaviour:
   validityStatus: 0
   notepad: {fileID: 0}
   rippingSoundEffect: {fileID: 8300000, guid: 929579a3d73d1f148b7d94118fb95125, type: 3}
-  writingSoundEffect: {fileID: 8300000, guid: 3d907d3aafd5d8b409f7577fad7bff71, type: 3}
+  writingSoundEffect1: {fileID: 8300000, guid: 53fa29e1bd7035f4faee04d503794645, type: 3}
+  writingSoundEffect2: {fileID: 8300000, guid: bd263dd6ef6edd149a9a60807053557e, type: 3}
+  writingSoundEffect3: {fileID: 8300000, guid: 7e69cf58270027e48a4237c7959d5220, type: 3}
