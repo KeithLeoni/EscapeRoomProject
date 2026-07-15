@@ -26,7 +26,12 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
     // Audio Setting
     private AudioSource _audioSource;
     public AudioClip rippingSoundEffect;
-    public AudioClip writingSoundEffect;
+    public AudioClip writingSoundEffect1;
+    public AudioClip writingSoundEffect2;
+    public AudioClip writingSoundEffect3;
+
+    // Marker collisions
+    private bool _hasEntered = false;
 
     void Start()
     {
@@ -115,13 +120,21 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
     // Define Drawing collider behaviour
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.EndsWith("Pen"))
+        // Do this only once per on trigger enter, also check that user is grabbing the marker
+        if (other.gameObject.name.EndsWith("Pen") && !_hasEntered)
         {
-            // Play sound effect
-            _audioSource.PlayOneShot(writingSoundEffect);
+            // Check grab status
+            XRGrabInteractable interactable = other.gameObject.GetComponent<XRGrabInteractable>();
+            if (interactable == null || !interactable.isSelected)
+            {
+                return;
+            }
+            _hasEntered = true;
             // Check which highlighter it is
             if (other.gameObject.name.StartsWith("Blue"))
             {
+                // Play sound effect
+                _audioSource.PlayOneShot(writingSoundEffect1);
                 // Assign right material
                 // Register selected power
                 selectedPower = ScenePowerManager.Power.flyingPower;
@@ -130,16 +143,26 @@ public class PaperSheet : MonoBehaviour, INetworkSpawnable
             }
             else if (other.gameObject.name.StartsWith("Pink"))
             {
+                // Play sound effect
+                _audioSource.PlayOneShot(writingSoundEffect2);
                 selectedPower = ScenePowerManager.Power.sizeManipulationPower;
                 Debug.Log("Size Selected");
             }
             else if (other.gameObject.name.StartsWith("Green"))
             {
+                // Play sound effect
+                _audioSource.PlayOneShot(writingSoundEffect3);
                 selectedPower = ScenePowerManager.Power.jellyVision;
                 Debug.Log("Jelly Selected");
             }
         }
         // Communicate with notepad to coordinate remote copies
         notepad.SendUpdateMessage();
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        // Reset variable for marker interaction
+        _hasEntered = false;
     }
 }
