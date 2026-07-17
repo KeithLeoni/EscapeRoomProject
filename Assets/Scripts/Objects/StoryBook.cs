@@ -20,6 +20,7 @@ public class StoryBook : MonoBehaviour
     // If local user has confirmed their choice
     private bool _hasConfirmed = false;
     private ScenePowerManager _powerManager;
+    private ScenePowerManager.Power _finalChoice;
     private GameObject _objectToDisable;
     private GameObject _rejectionSymbol;
     private GameObject _acceptionSymbol;
@@ -71,15 +72,8 @@ public class StoryBook : MonoBehaviour
     private void OnHoverExit(HoverExitEventArgs arg0)
     {
         // Reset
-        bool isValidSelection = arg0.interactableObject.transform.gameObject.GetComponent<PaperSheet>().validityStatus;
-        if (!isValidSelection)
-        {
-            ToggleWarning(false);
-        }
-        else
-        {
-            _acceptionSymbol.SetActive(false);
-        }
+        ToggleWarning(false);
+        _acceptionSymbol.SetActive(false);
     }
 
     // When you snap the piece of paper: make piece of paper non-grabbable & kinematic
@@ -106,8 +100,7 @@ public class StoryBook : MonoBehaviour
         // Delay disabling so that object has time to be snapped into place
         _objectToDisable = paper;
         Invoke(nameof(DisableSnappedPaper), 0.5f);
-        // Set local power in power manager
-        _powerManager.SetPlayerPower(paper.GetComponent<PaperSheet>().selectedPower);
+        _finalChoice = paper.GetComponent<PaperSheet>().selectedPower;
         // Invoke Teleportation
         if (_confirmedChoices == 2)
         {
@@ -119,12 +112,13 @@ public class StoryBook : MonoBehaviour
     {
         _objectToDisable.GetComponent<Rigidbody>().isKinematic = true;
         _objectToDisable.GetComponent<XRGrabInteractable>().enabled = false;
-        _objectToDisable = null;
     }
 
     private void Teleport()
     {
         // TODO
+        // Set local power in power manager
+        _powerManager.SetPlayerPower(_finalChoice);
         XROrigin xrOrigin = GameObject.FindFirstObjectByType<XROrigin>();
         _characterController = xrOrigin.GetComponent<CharacterController>();
         if (_characterController != null) _characterController.enabled = false;
@@ -168,13 +162,11 @@ public class StoryBook : MonoBehaviour
     // Message to synchronize who confirmed their selection
     private struct ConfirmMsg
     {
-        public string randVar;
     }
 
     public void SendUpdateMessage()
     {   // Propagate Update on network
         var message = new ConfirmMsg();
-        message.randVar = "";
         _context.SendJson(message);
     }
 

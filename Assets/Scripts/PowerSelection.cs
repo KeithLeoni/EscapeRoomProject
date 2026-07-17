@@ -4,6 +4,7 @@ using Unity.XR.CoreUtils;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using System.Collections.Generic;
 using TMPro;
+using System;
 
 /// <summary>
 /// This component handles the power selection portion of the game.
@@ -28,7 +29,6 @@ namespace Ubiq.Samples
 
         void Start()
         {
-            mainMenu.roomClient.OnJoinedRoom.AddListener(OnJoin);
             // When someone joins your room, send message to tell them which spawn point is available
             mainMenu.roomClient.OnPeerAdded.AddListener(AddPeer);
             mainMenu.roomClient.OnPeerRemoved.AddListener(RemovePeer);
@@ -83,38 +83,50 @@ namespace Ubiq.Samples
             }
         }
 
-        /// <summary>
-        /// When a client joins a room, enter power selection mode
-        /// </summary>
-        /// <param name="room"></param>
-        void OnJoin(IRoom room)
+        public void onCreate()
         {
-            if (!room.Publish)
+            // Joined or created a shared room 
+            // Is room full?
+            bool rejectedJoin = IsRoomFull();
+            if (rejectedJoin)
             {
-                // Non-shared room, reset peers
-                ResetPeers();
-                // Reset everithing in the room
-                notepad.DeactivatePowerSelection();
-                storyBook.ResetStatus();
-                ToggleMarkers(false);
-                ToggleInstructions(false);
+                // Kick out player
+                mainMenu.roomClient.Join("", false);
+                return;
             }
-            else
+            // Enter Selection Mode: i.e. activate notepad functionalities
+            notepad.ActivatePowerSelection(_maxPlayers);
+            ToggleMarkers(true);
+            ToggleInstructions(true);
+
+        }
+        public void onJoin()
+        {
+            // Joined or created a shared room 
+            // Is room full?
+            bool rejectedJoin = IsRoomFull();
+            if (rejectedJoin)
             {
-                // Joined or created a shared room 
-                // Is room full?
-                bool rejectedJoin = IsRoomFull();
-                if (rejectedJoin)
-                {
-                    // Kick out player
-                    mainMenu.roomClient.Join("", false);
-                    return;
-                }
-                // Enter Selection Mode: i.e. activate notepad functionalities
-                notepad.ActivatePowerSelection(_maxPlayers);
-                ToggleMarkers(true);
-                ToggleInstructions(true);
+                // Kick out player
+                mainMenu.roomClient.Join("", false);
+                return;
             }
+            // Enter Selection Mode: i.e. activate notepad functionalities
+            notepad.ActivatePowerSelection(_maxPlayers);
+            ToggleMarkers(true);
+            ToggleInstructions(true);
+
+        }
+
+        public void OnLeave()
+        {
+            // Non-shared room, reset peers
+            ResetPeers();
+            // Reset everithing in the room
+            notepad.DeactivatePowerSelection();
+            storyBook.ResetStatus();
+            ToggleMarkers(false);
+            ToggleInstructions(false);
         }
 
         private void AddPeer(IPeer arg0)
