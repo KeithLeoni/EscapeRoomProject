@@ -23,6 +23,8 @@ public class AvatarGraphicsSynchronizer : MonoBehaviour
         // The target Avatar identifier to update its graphics
         public string uuid;
         public ScenePowerManager.Power avatarPower;
+        // eventual parameter
+        public float param;
     }
 
     /// <summary>
@@ -31,11 +33,13 @@ public class AvatarGraphicsSynchronizer : MonoBehaviour
     /// the UpdateGraphics function is called. 
     /// </summary>
     /// <param name="uuidAvatar"> uuid of the avatar that has to be updated </param>
-    public void SendTrackMessage(string uuidAvatar, ScenePowerManager.Power power)
+    public void SendTrackMessage(string uuidAvatar, ScenePowerManager.Power power, float param)
     {
         var message = new UpdateGraphicsMsg();
         message.uuid = uuidAvatar;
         message.avatarPower = power;
+        message.param = param;
+        
         _context.SendJson(message);
     }
 
@@ -58,12 +62,17 @@ public class AvatarGraphicsSynchronizer : MonoBehaviour
                         JellyEyesScript jellyComponent = item.gameObject.GetComponent<JellyEyesScript>();
                         if (jellyComponent != null)
                         {
-                            jellyComponent.UpdateGraphics();
+                            jellyComponent.UpdateGraphics(m.param);
                         }
                         break;
                     case ScenePowerManager.Power.flyingPower:
                         break;
                     case ScenePowerManager.Power.sizeManipulationPower:
+                        SizeController sizeComponent = item.gameObject.GetComponent<SizeController>();
+                        if (sizeComponent != null)
+                        {
+                            sizeComponent.UpdateGraphics(m.param);
+                        }
                         break;
                     default:
                         break;

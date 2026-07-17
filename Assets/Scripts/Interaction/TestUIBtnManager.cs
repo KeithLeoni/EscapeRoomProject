@@ -34,7 +34,6 @@ public class TestUIBtnManager : MonoBehaviour
                 default:
                     break;
             }
-            
             // Add onclick events
             jellyBtn.GetComponent<Button>().onClick.AddListener( () => {
                 jellyBtn.GetComponent<Image>().color = Color.coral;

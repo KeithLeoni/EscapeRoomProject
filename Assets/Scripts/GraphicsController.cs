@@ -1,4 +1,4 @@
 public interface GraphicsController
 {
-    void UpdateGraphics( );
+    void UpdateGraphics(float param);
 }

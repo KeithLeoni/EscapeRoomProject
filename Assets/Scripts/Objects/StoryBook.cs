@@ -4,6 +4,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using TMPro;
 using Ubiq.Messaging;
+using Unity.XR.CoreUtils;
 
 /// <summary>
 /// </summary>
@@ -25,6 +26,8 @@ public class StoryBook : MonoBehaviour
     // Text colors
     private TextMeshPro _instructionsText;
     private NetworkContext _context;
+    private CharacterController _characterController;
+    public Transform dest;
 
     void Start()
     {
@@ -106,7 +109,7 @@ public class StoryBook : MonoBehaviour
         // Set local power in power manager
         _powerManager.SetPlayerPower(paper.GetComponent<PaperSheet>().selectedPower);
         // Invoke Teleportation
-        if (_confirmedChoices == 3)
+        if (_confirmedChoices == 2)
         {
             Teleport();
         }
@@ -122,8 +125,14 @@ public class StoryBook : MonoBehaviour
     private void Teleport()
     {
         // TODO
-        // Insert animation, sound effects ect.
-        // Teleport all
+        XROrigin xrOrigin = GameObject.FindFirstObjectByType<XROrigin>();
+        _characterController = xrOrigin.GetComponent<CharacterController>();
+        if (_characterController != null) _characterController.enabled = false;
+
+        xrOrigin.transform.position = dest.position;
+        xrOrigin.transform.rotation = dest.rotation;
+
+        if (_characterController != null) _characterController.enabled = true;
     }
 
     private void ToggleWarning(bool visibility)
@@ -179,6 +188,12 @@ public class StoryBook : MonoBehaviour
         if (_hasConfirmed)
         {
             _instructionsText.text = "Wait for your friends.\n" + _confirmedChoices + "/3";
+        }
+
+        // Invoke Teleportation
+        if (_confirmedChoices == 2)
+        {
+            Teleport();
         }
     }
 

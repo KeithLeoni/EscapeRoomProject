@@ -1,5 +1,4 @@
 using UnityEngine;
-using Ubiq.Avatars;
 using UnityEngine.InputSystem;
 
 public class JellyEyesScript : MonoBehaviour, GraphicsController
@@ -72,7 +71,7 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
             // Update graphics (i.e. eyes) of remote copies
             if (_graphicsSynchronizer != null)
             {
-                _graphicsSynchronizer.SendTrackMessage(_uuidAvatar, ScenePowerManager.Power.jellyVision);
+                _graphicsSynchronizer.SendTrackMessage(_uuidAvatar, ScenePowerManager.Power.jellyVision, 0);
             }
         }
     }
@@ -117,7 +116,7 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
     }
 
     // Update avatar graphics: this is done for the remote instances
-    public void UpdateGraphics()
+    public void UpdateGraphics(float param)
     {
         // Change JellyEyes visibility
         bool currentState = rightEyeSphere.activeSelf;

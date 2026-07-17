@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Ubiq::Ubiq.Networking.ConnectionDefinition
   listenOnIp: 
   listenOnPort: 
-  sendToIp: 192.168.1.14
+  sendToIp: 192.168.1.25
   sendToPort: 8009
   type: 0
   platforms: []
