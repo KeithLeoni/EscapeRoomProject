@@ -22,6 +22,9 @@ public class GrabbableElement : MonoBehaviour
     [Header("Socket Element component (if it exists)")]
     [Tooltip("Override Ubiq Grab Behaviour. Grab tracking can be automatically triggered when an object interacts with a Socket interactor.")]
     public SocketElement socketElement;                 // object containing socket element that interacts with grabbable object (if it exists)
+    // For more adaptability, check what is the original enable status of the grabbable object 
+    // & record it to reest status after grab release
+    private bool _defaultGrabbableStatus;
 
     void Start()
     {
@@ -88,6 +91,7 @@ public class GrabbableElement : MonoBehaviour
     /// </summary>
     public void EnableHighlight(HoverEnterEventArgs args)
     {
+        Debug.Log(args.interactorObject);
         _outlineComponent.enabled = true;
     }
 
@@ -161,6 +165,8 @@ public class GrabbableElement : MonoBehaviour
         {
             // Someone grabbed object
             owner = false;
+            // Store Grabbable component status before starting to track
+            _defaultGrabbableStatus = grabInteractable.enabled;
             // Disable Grabbable component
             if (grabInteractable.enabled)
             {
@@ -174,9 +180,9 @@ public class GrabbableElement : MonoBehaviour
         }
         else
         {
-            // Release grab
+            // Release grab: reset to previous state
             GetComponent<Rigidbody>().isKinematic = false;
-            grabInteractable.enabled = true;
+            grabInteractable.enabled = _defaultGrabbableStatus;
         }
     }
 }

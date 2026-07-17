@@ -17,7 +17,7 @@ namespace Ubiq.Samples
         public SocialMenu mainMenu;
         // Track people in rooom
         private List<string> _peersInRoom = new List<string>();
-        private int _maxPlayers = 3;
+        public int _maxPlayers = 3;
 
         // Objects needed for power selection
         public Spawner notepad;
@@ -83,55 +83,68 @@ namespace Ubiq.Samples
             }
         }
 
-        public void onCreate()
+        public void OnJoin()
         {
-            // Joined or created a shared room 
-            // Is room full?
-            bool rejectedJoin = IsRoomFull();
-            if (rejectedJoin)
-            {
-                // Kick out player
-                mainMenu.roomClient.Join("", false);
-                return;
-            }
-            // Enter Selection Mode: i.e. activate notepad functionalities
-            notepad.ActivatePowerSelection(_maxPlayers);
-            ToggleMarkers(true);
-            ToggleInstructions(true);
-
-        }
-        public void onJoin()
-        {
-            // Joined or created a shared room 
-            // Is room full?
-            bool rejectedJoin = IsRoomFull();
-            if (rejectedJoin)
-            {
-                // Kick out player
-                mainMenu.roomClient.Join("", false);
-                return;
-            }
-            // Enter Selection Mode: i.e. activate notepad functionalities
-            notepad.ActivatePowerSelection(_maxPlayers);
-            ToggleMarkers(true);
-            ToggleInstructions(true);
-
+            // Delay checks to when joining happens
+            mainMenu.roomClient.OnJoinedRoom.AddListener(CheckJoin);
         }
 
         public void OnLeave()
         {
-            // Non-shared room, reset peers
-            ResetPeers();
-            // Reset everithing in the room
-            notepad.DeactivatePowerSelection();
-            storyBook.ResetStatus();
-            ToggleMarkers(false);
-            ToggleInstructions(false);
+            TogglePowerSelection(false);
+        }
+
+        private void CheckJoin(IRoom arg0)
+        {
+            // Is room full?
+            bool rejectedJoin = IsRoomFull();
+            if (rejectedJoin)
+            {
+                // Kick out player
+                mainMenu.roomClient.Join("", false);
+                return;
+            }
+            mainMenu.roomClient.OnJoinedRoom.RemoveListener(CheckJoin);
+        }
+
+        public void TogglePowerSelection(bool activationStatus)
+        {
+            // Bruteforce teleportation for testing
+            SphereCollider triggerCollider = storyBook.gameObject.GetComponent<SphereCollider>();
+            triggerCollider.enabled = activationStatus;
+            foreach (var instructions in promptInstructions)
+            {
+                // For the book instruction reset color & text
+                if (instructions.name == "PromptInstruction2")
+                {
+                    instructions.SetActive(activationStatus);
+                    instructions.GetComponent<TextMeshPro>().text = "Get Closer to the book to start the experience!";
+                }
+            }
+            /*
+            if (activationStatus)
+            {
+                notepad.ActivatePowerSelection(_maxPlayers);
+            }
+            else
+            {
+                ResetPeers();
+                notepad.DeactivatePowerSelection();
+                storyBook.ResetStatus();
+            }
+            ToggleMarkers(activationStatus);
+            ToggleInstructions(activationStatus);
+            */
         }
 
         private void AddPeer(IPeer arg0)
         {
-            AddPeer(arg0.uuid);
+            bool addResult = AddPeer(arg0.uuid);
+            if (addResult && _peersInRoom.Count == (_maxPlayers - 1))
+            {
+                // Start Power Selection
+                TogglePowerSelection(true);
+            }
         }
 
         private void RemovePeer(IPeer arg0)

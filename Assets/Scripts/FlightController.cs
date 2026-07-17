@@ -9,8 +9,12 @@ public class FlightController : MonoBehaviour
     public GameObject flyPrefab;
     private GameObject _flyObject;
 
-    private void Awake()
+    private void Start()
     {
+        if (!gameObject.GetComponent<Ubiq.Avatars.Avatar>().IsLocal)
+        {
+            return;
+        }
         // Extrapolate from the scene XROrigin & move providers
         GameObject locomotion = FindFirstObjectByType<LocomotionMediator>().gameObject;
         // Add component
@@ -21,7 +25,7 @@ public class FlightController : MonoBehaviour
 
     // Remove Flying Object
     private void OnDestroy()
-    {
+    { 
         Destroy(_flyObject);
     }
 

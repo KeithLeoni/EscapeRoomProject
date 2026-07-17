@@ -5,12 +5,14 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class ChestTriggerDialogue : MonoBehaviour
 {
     private CatSpeech _catSpeechScript;
+    private MusicSequencePuzzleManager _musicScript;
     private bool talked = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _catSpeechScript = FindFirstObjectByType<CatSpeech>();
+        _musicScript = FindFirstObjectByType<MusicSequencePuzzleManager>();
     }
 
     void OnTriggerEnter(Collider collider)
@@ -26,6 +28,8 @@ public class ChestTriggerDialogue : MonoBehaviour
             }
 
             talked = true;
+            _musicScript.activateMusicPuzzle = true;
+
         }
     }
 }
