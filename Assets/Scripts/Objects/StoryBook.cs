@@ -35,6 +35,7 @@ public class StoryBook : MonoBehaviour
     private List<string> setOrderAvatars = new List<string>();
     private List<ScenePowerManager.Power> setOrderPowers = new List<ScenePowerManager.Power>();
     private AvatarManager _avatarManager;
+    private CatSpeech _catSpeechScript;
 
     void Start()
     {
@@ -59,6 +60,8 @@ public class StoryBook : MonoBehaviour
         _instructionsText = gameObject.GetComponentInChildren<TextMeshPro>(true);
 
         _avatarManager = FindFirstObjectByType<AvatarManager>();
+        
+        _catSpeechScript = FindFirstObjectByType<CatSpeech>();
     }
 
     // For player testing
@@ -198,6 +201,8 @@ public class StoryBook : MonoBehaviour
         xrOrigin.transform.rotation = dest.rotation;
 
         if (_characterController != null) _characterController.enabled = true;
+
+        _catSpeechScript.SayLocal("What?! Who are you?! What are you doing here kids?! You need to leave before he comes back! How? I don’t know! What were you doing? How did you come here? Well, there is not time to lose, maybe you can find some clues on how to go back looking around… This day suddenly became interesting…", 0);
     }
 
     private void ToggleWarning(bool visibility)

@@ -59,6 +59,7 @@ public class CatSpeech : MonoBehaviour
         // Play sound
         _speechBubbleAudio.clip = audioClip;
         _speechBubbleAudio.Play();
+        Debug.Log("SayLocal");
     }
     
     // Struct to track dialogue

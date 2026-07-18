@@ -31,10 +31,13 @@ public class OpenDoorScript : MonoBehaviour
     public void OpenDoor()
     {
         transform.Rotate(0f, -90f, 0f, Space.Self);
+        Debug.Log(transform + "Rotated");
 
         doorAudioSource.Play();
+        Debug.Log("Sound played");
 
-        _catSpeechScript.Say("You did it! You opened the door, I think you’ll find what you need to come back to your world there … But you’ll need to think about how you got here in the first place…", 0);
+        _catSpeechScript.SayLocal("You did it! You opened the door, I think you’ll find what you need to come back to your world there … But you’ll need to think about how you got here in the first place…", 0);
+        Debug.Log("Said");
     }
 
 

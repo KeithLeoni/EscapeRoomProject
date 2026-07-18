@@ -56,6 +56,7 @@ public class PullLeverScript : MonoBehaviour
                 _doorScript.OpenDoor();
             }
         }
+        SendTrackLeverMessage();
     }
     
      private struct TrackLever
@@ -64,7 +65,7 @@ public class PullLeverScript : MonoBehaviour
     }
 
     // Send message to track lever
-    private void SendTrackTrackLeverMessage()
+    private void SendTrackLeverMessage()
     {
         var message = new TrackLever();
         message.grabEnabled = _grab.enabled;
@@ -76,7 +77,8 @@ public class PullLeverScript : MonoBehaviour
     {
         var m = message.FromJson<TrackLever>();
         _grab.enabled = m.grabEnabled;
-        _doorScript.doorAudioSource.Play();
+        Debug.Log(_doorScript);
+        _doorScript.OpenDoor();
     }
 
 }

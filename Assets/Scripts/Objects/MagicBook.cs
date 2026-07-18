@@ -11,6 +11,7 @@ public class MagicBook : MonoBehaviour
     public AudioClip writingSound; 
     private AudioSource audioSource;
     public Transform dest;
+    private bool _escaped = false;
 
 
 
@@ -30,6 +31,10 @@ public class MagicBook : MonoBehaviour
         // Questo catturerà il trigger anche se l'oggetto è cinematico
         if (other.gameObject.name.Contains("MagicInkTip") || (other.transform.parent != null && other.transform.parent.name.Contains("MagicInkTip")))
         {
+            // Avoid echo
+            if (_escaped) return;
+            _escaped = true;
+        
             audioSource.PlayOneShot(writingSound);
             Debug.Log("YOU ESCAPED!");
 
@@ -37,24 +42,18 @@ public class MagicBook : MonoBehaviour
             GameObject avatarManager = FindFirstObjectByType<AvatarManager>().gameObject;
             Ubiq.Avatars.Avatar[] avatars = avatarManager.GetComponentsInChildren<Ubiq.Avatars.Avatar>();
             XROrigin xrOrigin = FindFirstObjectByType<XROrigin>();
-            
-            foreach (var avatar in avatars)
-            {
-                // Move only local avatar to avoid conflict
-                if (avatar.IsLocal)
-                {
-                    CharacterController cc = xrOrigin.GetComponent<CharacterController>();
-                    if(cc != null) cc.enabled = false;
+            Debug.Log(xrOrigin);
 
-                    xrOrigin.transform.position = dest.position;
-                    xrOrigin.transform.rotation = dest.rotation;
+           
+            CharacterController cc = xrOrigin.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+            Debug.Log(cc);
 
-                    if(cc != null) cc.enabled = true;
+            xrOrigin.transform.position = dest.position;
+            xrOrigin.transform.rotation = dest.rotation;
 
-                    break;
-                }
-            }            
-
+            if(cc != null) cc.enabled = true;
+               
         }
     }
 
