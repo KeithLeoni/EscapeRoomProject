@@ -67,7 +67,7 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "EscapeRoomProject-master.slnx",
+    "dotnet.defaultSolution": "clonedProject.slnx",
     "editor.formatOnType": true,
     "editor.quickSuggestions": {
         "other": true,

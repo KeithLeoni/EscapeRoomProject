@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using System.Numerics;
+using Unity.XR.CoreUtils;
+using Ubiq.Avatars;
+
 
 public class MagicBook : MonoBehaviour
 {  
@@ -8,8 +11,6 @@ public class MagicBook : MonoBehaviour
     public AudioClip writingSound; 
     private AudioSource audioSource;
     public Transform dest;
-
-    public Transform playerRig; 
 
 
 
@@ -32,15 +33,27 @@ public class MagicBook : MonoBehaviour
             audioSource.PlayOneShot(writingSound);
             Debug.Log("YOU ESCAPED!");
 
-            CharacterController cc = playerRig.GetComponent<CharacterController>();
-            if(cc != null) cc.enabled = false;
-
-            playerRig.position = dest.position;
-            playerRig.rotation = dest.rotation;
-
-            if(cc != null) cc.enabled = true;
-
+            // Find Local Avatar
+            GameObject avatarManager = FindFirstObjectByType<AvatarManager>().gameObject;
+            Ubiq.Avatars.Avatar[] avatars = avatarManager.GetComponentsInChildren<Ubiq.Avatars.Avatar>();
+            XROrigin xrOrigin = FindFirstObjectByType<XROrigin>();
             
+            foreach (var avatar in avatars)
+            {
+                // Move only local avatar to avoid conflict
+                if (avatar.IsLocal)
+                {
+                    CharacterController cc = xrOrigin.GetComponent<CharacterController>();
+                    if(cc != null) cc.enabled = false;
+
+                    xrOrigin.transform.position = dest.position;
+                    xrOrigin.transform.rotation = dest.rotation;
+
+                    if(cc != null) cc.enabled = true;
+
+                    break;
+                }
+            }            
 
         }
     }

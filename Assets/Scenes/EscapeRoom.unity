@@ -11396,7 +11396,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9067502073358579356, guid: 47eb2cdf5e5957a429b52cd1ab02a7a6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.27
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 9067502073358579356, guid: 47eb2cdf5e5957a429b52cd1ab02a7a6, type: 3}
       propertyPath: m_LocalPosition.y
@@ -21982,6 +21982,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c16d1380920d034988f6d8abafd8685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OpenDoorScript
+  doorAudioSource: {fileID: 0}
 --- !u!82 &7579299060845064557
 AudioSource:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using Ubiq.Messaging;
 
 public class PullLeverScript : MonoBehaviour
 {
@@ -7,20 +8,29 @@ public class PullLeverScript : MonoBehaviour
     private Transform t;
     private GameObject lever;
     private GameObject doorPivot;
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grab;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grab;
+    private OpenDoorScript _doorScript;
+    // For synch.
+    NetworkContext context;
+
     private void Start()
     {
         doorPivot = GameObject.Find("DoorPivot");
-        grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        grab.selectEntered.AddListener(XRGrabInteractable_Activated);
+        _grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        _grab.selectEntered.AddListener(XRGrabInteractable_Activated);
+
+        _doorScript = doorPivot.GetComponent<OpenDoorScript>();
+
+        // Get context
+        context = NetworkScene.Register(this);
     }
 
     private void OnDestroy()
     {
-        grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        if (grab != null)
+        _grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        if (_grab != null)
         {
-            grab.selectEntered.RemoveListener(XRGrabInteractable_Activated);
+            _grab.selectEntered.RemoveListener(XRGrabInteractable_Activated);
         }
     }
 
@@ -33,20 +43,40 @@ public class PullLeverScript : MonoBehaviour
     {
         transform.Rotate(160f, 0f, 0f, Space.Self);
 
-        if (grab != null)
+        if (_grab != null)
         {
-            grab.enabled = false;
+            _grab.enabled = false;
         }
 
         if (doorPivot != null)
         {
-            var doorScript = doorPivot.GetComponent<OpenDoorScript>(); 
-            
-            if (doorScript != null)
+
+            if (_doorScript != null)
             {
-                doorScript.OpenDoor(); 
+                _doorScript.OpenDoor();
             }
         }
+    }
+    
+     private struct TrackLever
+    {
+        public bool grabEnabled;
+    }
+
+    // Send message to track lever
+    private void SendTrackTrackLeverMessage()
+    {
+        var message = new TrackLever();
+        message.grabEnabled = _grab.enabled;
+        context.SendJson(message);
+    }
+
+    // Process message to track lever
+    public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
+    {
+        var m = message.FromJson<TrackLever>();
+        _grab.enabled = m.grabEnabled;
+        _doorScript.doorAudioSource.Play();
     }
 
 }
