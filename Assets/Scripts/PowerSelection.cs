@@ -17,7 +17,7 @@ namespace Ubiq.Samples
         public SocialMenu mainMenu;
         // Track people in rooom
         private List<string> _peersInRoom = new List<string>();
-        public int _maxPlayers = 3;
+        public int maxPlayers = 3;
 
         // Objects needed for power selection
         public Spawner notepad;
@@ -43,7 +43,7 @@ namespace Ubiq.Samples
                 storyBook = FindAnyObjectByType<StoryBook>();
             }
 
-            if (markers.Count < _maxPlayers)
+            if (markers.Count < maxPlayers)
             {
                 // Find markers
                 markers.Clear();
@@ -121,6 +121,11 @@ namespace Ubiq.Samples
                     instructions.GetComponent<TextMeshPro>().text = "Get Closer to the book to start the experience!";
                 }
             }
+            if (!activationStatus)
+            {
+                ResetPeers();
+                storyBook.ResetStatus();
+            }
             /*
             if (activationStatus)
             {
@@ -140,7 +145,7 @@ namespace Ubiq.Samples
         private void AddPeer(IPeer arg0)
         {
             bool addResult = AddPeer(arg0.uuid);
-            if (addResult && _peersInRoom.Count == (_maxPlayers - 1))
+            if (addResult && _peersInRoom.Count == (maxPlayers - 1))
             {
                 // Start Power Selection
                 TogglePowerSelection(true);
@@ -169,7 +174,7 @@ namespace Ubiq.Samples
         /// </summary>
         private bool IsRoomFull()
         {
-            return _peersInRoom.Count == _maxPlayers;
+            return _peersInRoom.Count == maxPlayers;
         }
 
         /// <summary>
@@ -178,7 +183,7 @@ namespace Ubiq.Samples
         /// <returns>True if peer was added</returns>
         private bool AddPeer(string uuid)
         {
-            if (_peersInRoom.Count < _maxPlayers)
+            if (_peersInRoom.Count < maxPlayers)
             {
                 _peersInRoom.Add(uuid);
                 return true;

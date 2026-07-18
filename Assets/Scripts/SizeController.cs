@@ -2,6 +2,7 @@ using System;
 using Unity.XR.CoreUtils;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
 /// <summary>
 /// Adds the size manipulation provider to the scene
@@ -24,16 +25,24 @@ public class SizeController : MonoBehaviour, GraphicsController
     private SizeManipulationProvider _sizeComponent;
     private Transform _avatarBody;
     public bool isLocal { get; private set; } = false;
+    public DynamicMoveProvider moveProvider;
+    // Expected default speed
+    private float _normalSpeed;
     // For Network sync
     AvatarGraphicsSynchronizer _graphicsSynchronizer;
     private string _uuidAvatar;
 
     private void Start()
     {
-        if (!transform.gameObject.GetComponent<Ubiq.Avatars.Avatar>().IsLocal)
+        // Get This avatar
+        Ubiq.Avatars.Avatar thisAvatar = gameObject.GetComponent<Ubiq.Avatars.Avatar>();
+        isLocal = thisAvatar.IsLocal;
+        // Do not proceed if this is a remote avatar copy
+        if (!isLocal)
         {
             return;
         }
+        _uuidAvatar = thisAvatar.Peer.uuid;
 
         // Find Graphics updater in the scene to change look of remote copies of the avatar
         _graphicsSynchronizer = FindFirstObjectByType<AvatarGraphicsSynchronizer>();
@@ -42,9 +51,15 @@ public class SizeController : MonoBehaviour, GraphicsController
         {
             Debug.LogError("Graphics Synchronizer not found! Avatar Graphics will not be updated.");
         }
-        _uuidAvatar = gameObject.GetComponent<Ubiq.Avatars.Avatar>().Peer.uuid;
 
-        isLocal = true;
+        // Find move provider (needed to regulate speed depending on user size)
+        if (moveProvider == null)
+        {
+            moveProvider = FindFirstObjectByType<DynamicMoveProvider>();
+            _normalSpeed = moveProvider.moveSpeed;
+        }
+
+        // Components needed for correct scaling
         GameObject xrOrigin = FindFirstObjectByType<XROrigin>().gameObject;
         _avatarBody = transform;
         // Initialize scaling parameters
@@ -110,29 +125,34 @@ public class SizeController : MonoBehaviour, GraphicsController
 
         Debug.Log("Avatar size level: " + sizeLevel);
 
+        float scaleFactor;
+
         switch (sizeLevel)
         {
             case -2:
-                targetScale = normalBodyScale * 0.2f;
+                scaleFactor = 0.2f;
                 break;
 
             case -1:
-                targetScale = normalBodyScale * 0.5f;
-                break;
-
-            case 0:
-                targetScale = normalBodyScale;
+                scaleFactor = 0.5f;
                 break;
 
             case 1:
-                targetScale = normalBodyScale * 2f;
+                scaleFactor = 1.5f;
                 break;
 
-            case 2:
-                targetScale = normalBodyScale * 2.5f;
+            default:
+                scaleFactor = 1f;
                 break;
+
         }
 
+        targetScale = normalBodyScale * scaleFactor;
+        // Adjust Velocity
+        if (moveProvider != null)
+        {
+            moveProvider.moveSpeed = _normalSpeed * (1/scaleFactor);
+        }
     }
 
     private void OnEnable()
@@ -167,6 +187,10 @@ public class SizeController : MonoBehaviour, GraphicsController
         return _avatarBody.localScale;
     }
 
+    /// <summary>
+    /// Propagates Avatar Scaling to remote copies
+    /// </summary>
+    /// <param name="param"></param>
     public void UpdateGraphics(float param)
     {
         // Update avatar's scale

@@ -25,12 +25,9 @@ public class FuseBox : MonoBehaviour
     private bool[] _lights = { true, true, true, false };
     // Grate part
     private MeshRenderer _indicatorMeshRenderer;
-    private bool _animateGrate = false;
-    // Grate opening variables
-    private Vector3 _rotationPoint;
-    private Quaternion _finalRotationTarget;
-    private float _angularSpeed = -100f;
-    private float _prevDiff = 190f;
+
+    // Audio clips
+    public AudioClip gateSoundEffect;
 
     private void Start()
     {
@@ -53,27 +50,6 @@ public class FuseBox : MonoBehaviour
 
         // Get Grate and Grate light indicator reference
         _indicatorMeshRenderer = (parentObject.transform.parent.gameObject).GetNamedChild("LightSignals").GetComponent<MeshRenderer>();
-
-        _rotationPoint = grateDoor.gameObject.GetNamedChild("pivotPoint").transform.position;
-        _finalRotationTarget = Quaternion.Euler(180, -45f, 0);
-    }
-
-    void Update()
-    {
-        if (_animateGrate)
-        {
-            // Animate grate opening
-            float angleDiff = Quaternion.Angle(grateDoor.transform.rotation, _finalRotationTarget);
-            // Snap into position
-            if (angleDiff < 5f || _prevDiff < angleDiff)
-            {
-                grateDoor.transform.rotation = _finalRotationTarget;
-                _animateGrate = false;
-                return;
-            }
-            grateDoor.transform.RotateAround(_rotationPoint, Vector3.up, _angularSpeed * Time.deltaTime);
-            _prevDiff = angleDiff;
-        }
     }
 
     private void UpdateLights1(SelectEnterEventArgs args)
@@ -125,7 +101,8 @@ public class FuseBox : MonoBehaviour
         if (_lights[0] && _lights[1] && _lights[2] && _lights[3])
         {
             // Open Grate
-            _animateGrate = true;
+            grateDoor.GetComponent<AudioSource>().PlayOneShot(gateSoundEffect);
+            grateDoor.GetComponent<Animator>().Play("OpenGate");
             // Change indicator colors
             Material[] materials = _indicatorMeshRenderer.materials;
             materials[1] = colorOn;
@@ -133,11 +110,12 @@ public class FuseBox : MonoBehaviour
         }
     }
 
-    private void OnDeselect1( SelectExitEventArgs args) {
+    private void OnDeselect1(SelectExitEventArgs args)
+    {
         ChangeMaterial(1, colorOff);
         _lights[0] = false;
     }
-    
+
     private void OnDeselect2(SelectExitEventArgs args)
     {
         ChangeMaterial(2, colorOff);
@@ -161,7 +139,8 @@ public class FuseBox : MonoBehaviour
     /// </summary>
     /// <param name="index"> Index in mesh renderer of the material </param>
     /// <param name="newMaterial"> Material to change the light to </param>
-    private void ChangeMaterial(int index, Material newMaterial) {
+    private void ChangeMaterial(int index, Material newMaterial)
+    {
         Material[] materials = _caseMeshRenderer.materials;
         materials[(2 + index)] = newMaterial;
         _caseMeshRenderer.materials = materials;

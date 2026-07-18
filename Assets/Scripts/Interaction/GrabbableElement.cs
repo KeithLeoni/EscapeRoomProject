@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using Ubiq.Messaging;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 /// <summary>
 /// Component to <see langword="add"/> to XR grabbabble <see langword="object"/> to 
@@ -19,9 +20,6 @@ public class GrabbableElement : MonoBehaviour
     // Needed to keep tracking object while it is "falling" after grab release
     private bool _waitForFall = false;
     private Vector3 _prevPosition = new Vector3(0, -100, 0);         // to determine if object has stopped
-    [Header("Socket Element component (if it exists)")]
-    [Tooltip("Override Ubiq Grab Behaviour. Grab tracking can be automatically triggered when an object interacts with a Socket interactor.")]
-    public SocketElement socketElement;                 // object containing socket element that interacts with grabbable object (if it exists)
     // For more adaptability, check what is the original enable status of the grabbable object 
     // & record it to reest status after grab release
     private bool _defaultGrabbableStatus;
@@ -80,7 +78,7 @@ public class GrabbableElement : MonoBehaviour
                     owner = false;
                     _waitForFall = false;
                     _prevPosition = new Vector3(0, -100, 0);
-                    SendReleaseMessage();                    
+                    SendReleaseMessage();
                 }
             }
         }
@@ -91,7 +89,12 @@ public class GrabbableElement : MonoBehaviour
     /// </summary>
     public void EnableHighlight(HoverEnterEventArgs args)
     {
-        Debug.Log(args.interactorObject);
+        // Skip if it is caused by socket snap
+        if (args.interactorObject.transform.gameObject.GetComponent<NearFarInteractor>() == null)
+        {
+            // Not a user-caused interaction
+            return;
+        }
         _outlineComponent.enabled = true;
     }
 
@@ -111,9 +114,10 @@ public class GrabbableElement : MonoBehaviour
     /// </summary>
     private void OnSelect(SelectEnterEventArgs args)
     {
-        // Only track if Grab was not triggered due to Socket interaction
-        if (socketElement != null && socketElement.socketTracker.IsSocketActivated())
+        // Skip if it is caused by socket snap
+        if (args.interactorObject.transform.gameObject.GetComponent<NearFarInteractor>() == null)
         {
+            // Not a user-caused interaction
             return;
         }
         // Local avatar becomes owner

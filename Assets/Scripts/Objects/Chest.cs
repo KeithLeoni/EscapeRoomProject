@@ -17,6 +17,7 @@ public class Chest : MonoBehaviour
     // Used as fail safe in case of lag
     private float _prevDiff = 240f;
     private bool _isOpening;
+    public AudioClip lockOpenSoundEffect;
     [Header("Key object the lock interacts with")]
     [Space]
     public GameObject keyObject;
@@ -85,6 +86,7 @@ public class Chest : MonoBehaviour
     public void OnSnap()
     {
         // On snap the lock falls to the ground
+        _lockObject.GetComponent<AudioSource>().PlayOneShot(lockOpenSoundEffect);
         // Key has to be kinematic and not selectable
         keyObject.GetComponent<XRGrabInteractable>().hoverEntered.RemoveAllListeners();
         keyObject.GetComponent<XRGrabInteractable>().hoverExited.RemoveAllListeners();

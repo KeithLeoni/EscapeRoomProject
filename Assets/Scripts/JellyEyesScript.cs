@@ -8,7 +8,6 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
     public GameObject rightEyeSphere;
     // Camera Setup
     private Camera _localCamera;
-    private int _eyeHiddenLayerIndex = -1;
     private int _traceLayerIndex = -1; // Added back to track the trace layer safely
     // Input action
     [Tooltip("Input Action to activate power")]
@@ -38,20 +37,7 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
         _localCamera = Camera.main;
         if (_localCamera == null) _localCamera = GetComponentInChildren<Camera>();
 
-        _eyeHiddenLayerIndex = LayerMask.NameToLayer("LocalPlayerHidden");
         _traceLayerIndex = LayerMask.NameToLayer("JellyTraces");
-
-        // Hide eyes for the player with this power (local avatar)
-        if (_eyeHiddenLayerIndex != -1)
-        {
-            if (leftEyeSphere != null) leftEyeSphere.layer = _eyeHiddenLayerIndex;
-            if (rightEyeSphere != null) rightEyeSphere.layer = _eyeHiddenLayerIndex;
-
-            if (_localCamera != null)
-            {
-                _localCamera.cullingMask &= ~(1 << _eyeHiddenLayerIndex);
-            }
-        }
 
         // Hide traces by default on startup for your local camera view
         if (_traceLayerIndex != -1 && _localCamera != null)
@@ -111,8 +97,6 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
     {
         // Reset Layer visibility to standard
         ForceToggleLocalTraces(false);
-        // Make Eye Layer visible again
-        _localCamera.cullingMask |= (1 << _eyeHiddenLayerIndex);
     }
 
     // Update avatar graphics: this is done for the remote instances

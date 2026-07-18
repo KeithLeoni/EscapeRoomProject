@@ -10,8 +10,9 @@ using Unity.XR.CoreUtils;
 public class Cypher : MonoBehaviour
 {
     private XRGrabInteractable _cypherInteractable;
-    private MeshCollider _knobCollider;
-    private XRKnob _knobInteractable;
+    private MeshCollider _wheelCollider;
+    private BoxCollider _cypherCollider;
+    private XRGrabInteractable _wheelInteractable;
     // Track network
     [System.NonSerialized]
     public bool owner = false;                      // are you currently grabbing/interacting with the object
@@ -25,30 +26,36 @@ public class Cypher : MonoBehaviour
 
     void Start()
     {
-        // Enable Knob interactable only if object is being grabbed
+        // Enable Inner grab interactable only if object is being grabbed
         _cypherInteractable = GetComponent<XRGrabInteractable>();
-        _knobCollider = gameObject.GetNamedChild("Inner").GetComponent<MeshCollider>();
+        // Get external collider
+        _cypherCollider = gameObject.GetNamedChild("Outer").GetComponent<BoxCollider>();
+        GameObject hingeJointObj = gameObject.GetNamedChild("HingeJoint");
+        _wheelCollider = hingeJointObj.GetComponentInChildren<MeshCollider>();
+
+        // Toggle mesh colliders depending on whether the cypher is being grabbed
         _cypherInteractable.selectEntered.AddListener(OnSelect);
         _cypherInteractable.selectExited.AddListener(OnDeselect);
-        _knobCollider.enabled = false;
+        // Disable wheel collider
+        _wheelCollider.enabled = false;
+
         // Network
         _context = NetworkScene.Register(this);
-        _knobInteractable = gameObject.GetNamedChild("Inner").GetComponent<XRKnob>();
-        _knobInteractable.selectEntered.AddListener(StartTracking);
-        _knobInteractable.selectExited.AddListener(StopTracking);
+        _wheelInteractable = hingeJointObj.GetComponent<XRGrabInteractable>();
+        _wheelInteractable.selectEntered.AddListener(StartTracking);
+        _wheelInteractable.selectExited.AddListener(StopTracking);
 
         // Cat dialogue script
         _catSpeechScript = FindFirstObjectByType<CatSpeech>();
-
     }
 
 
     void OnSelect(SelectEnterEventArgs args)
     {
-        // Deactivate box collider of grabbable object to prevent conflicts
-        gameObject.GetComponent<BoxCollider>().enabled = false;
+        // Deactivate collider of grabbable object to prevent conflicts
+        _cypherCollider.enabled = false;
         // Activate knob interactable
-        _knobCollider.enabled = true;
+        _wheelCollider.enabled = true;
 
         if (!_talked)
         {
@@ -58,25 +65,26 @@ public class Cypher : MonoBehaviour
 
     void OnDeselect(SelectExitEventArgs args)
     {
-        _knobCollider.enabled = false;
+        _wheelCollider.enabled = false;
         // Reactivate collider
-        gameObject.GetComponent<BoxCollider>().enabled = true;
+        _cypherCollider.enabled = true;
     }
 
 
     // ----------------------------------------------------------------------------------
-
+    // This tracking only works for the inner wheel, the whole chypher is tracked by the 
+    // Grabbable Element component
     private void FixedUpdate()
     {
         if (owner)
         {
-            // Optimize network message sending
-            int currentSector = _knobInteractable.GetCurrentSector();
-            if (currentSector != _prevSector)
+            // Optimize network message sending for the inner wheel:
+            // send messages only when the wheel is grabbed
+            if (_wheelCollider.enabled)
             {
-                // Send network message to make update copies' position & rotation
-                SendTrackMessage();
-                _prevSector = currentSector;                
+                // User is grabbing inner wheel
+                // Send network message to make update copies' rotation
+                SendTrackMessage();              
             }
         }
     }
@@ -91,8 +99,6 @@ public class Cypher : MonoBehaviour
     private void StartTracking(SelectEnterEventArgs args)
     {
         owner = true;
-        // Start tracking sector state
-        _prevSector = _knobInteractable.GetCurrentSector();
     }
 
     private void StopTracking(SelectExitEventArgs args)
@@ -128,18 +134,18 @@ public class Cypher : MonoBehaviour
         {
             // Someone grabbed rotatable knob object
             owner = false;
-            // Disable Knob component
-            if (_knobInteractable.enabled)
+            // Disable inner wheel component (not really requires)
+            if (_wheelInteractable.enabled)
             {
-                _knobInteractable.enabled = false;
+                _wheelInteractable.enabled = false;
             }
-            // Keep tracking rotation
-            _knobInteractable.knobObject.transform.localRotation = m.rotation;
+            // Keep tracking rotation of the hinge
+            _wheelInteractable.gameObject.transform.localRotation = m.rotation;
         }
         else
         {
             // Release grab
-            _knobInteractable.enabled = true;
+            _wheelInteractable.enabled = true;
         }
     }
 }
