@@ -5,11 +5,15 @@ using Ubiq.Messaging;
 
 public class CatSpeech : MonoBehaviour
 {
+    // Bubble text and audio components
     private TextMeshPro _speechBubbleText;
-    private  AudioSource _speechBubbleAudio;
+    private AudioSource _speechBubbleAudio;
+    
+    // Audio clips
     public AudioClip normalSound;
     public AudioClip happySound;
     public AudioClip angrySound;
+    
     // For synch.
     NetworkContext context;
 
@@ -39,14 +43,14 @@ public class CatSpeech : MonoBehaviour
     }
 
     /// <summary>
-    /// Function to make cat talk locally. Excludes synchronization. To be used in response to network message to avoid "Say" loops.
+    /// Function to make cat talk locally. Excludes synchronization (e.g. to be used in ProcessMessage to avoid "Say" loops)
     /// </summary>
     public void SayLocal(string text, int mode)
     {
         // Change text
         _speechBubbleText.text = text;
 
-        // Select correct audio
+        // Select correct audio based on mode
         AudioClip audioClip;
         switch (mode)
         {
@@ -59,6 +63,7 @@ public class CatSpeech : MonoBehaviour
         // Play sound
         _speechBubbleAudio.clip = audioClip;
         _speechBubbleAudio.Play();
+        
         Debug.Log("SayLocal");
     }
     

@@ -3,46 +3,52 @@ using UnityEngine;
 public class CauldronScript : MonoBehaviour
 {
     // Potion ingredients
-    private bool potionGreen, potionRed, ivyLeaf = false;    
+    private bool _potionGreen, _potionRed, _ivyLeaf = false;
+
+    // Prefab of the magic ink that will spawn 
     public GameObject magicInkPrefab;
-    [SerializeField] private float spawnHeightOffset = 0.2f; // y offset
-    private GameObject magicInk;
-    private bool hasSpawned = false; // this prevents ink from spawingin more than once
+    // Spawning height of the magicInkPrefab
+    [SerializeField] private float _spawnHeightOffset = 0.2f; // y offset
+    private GameObject _magicInk;
+    // Variable to prevent ink from spawingin more than once
+    private bool _hasSpawned = false; 
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-    }
+    // void Start()
+    // {
+    // }
 
-    // Update is called once per frame
+    // Check if all ingredients have been added
     void Update()
     {
         // When all ingredients have been added, spawn the magic ink on top of the cauldron
-        if (potionGreen && potionRed && ivyLeaf && !hasSpawned)
+        if (_potionGreen && _potionRed && _ivyLeaf && !_hasSpawned)
         {
-            Vector3 spawnPosition = transform.position + new Vector3(0f, spawnHeightOffset, 0f);
-            magicInk = Instantiate(magicInkPrefab, spawnPosition, Quaternion.identity);
-            hasSpawned = true;
+            Vector3 spawnPosition = transform.position + new Vector3(0f, _spawnHeightOffset, 0f);
+            _magicInk = Instantiate(magicInkPrefab, spawnPosition, Quaternion.identity);
+
+            // Set to true to avoid infinite spawns
+            _hasSpawned = true;
         }
     }
 
     // When an object collides with the cauldron, the script checks the object name
-    // If the object is one of the ingredients of the potion, it gets "added" (deleted from scene)
+    // If the object is one of the ingredients of the potion, it gets "added" to the potion (in practice deleted from scene)
     void OnCollisionEnter(Collision col) {
         if(col.gameObject.name == "PuzzlePotionGreen")
             {   
-                potionGreen = true;
+                _potionGreen = true;
                 Destroy(col.gameObject);
             }
         else if(col.gameObject.name == "PuzzlePotionRed")
             {
-                potionRed = true;
+                _potionRed = true;
                 Destroy(col.gameObject);
             }
         else if(col.gameObject.name.Contains("IvyLeaf")) // Any leaf works
             {
-                ivyLeaf = true;
+                _ivyLeaf = true;
                 Destroy(col.gameObject);
             }
     }

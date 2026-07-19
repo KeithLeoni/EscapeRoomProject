@@ -5,9 +5,9 @@ using Ubiq.Messaging;
 public class PullLeverScript : MonoBehaviour
 {
     
-    private Transform t;
-    private GameObject lever;
-    private GameObject doorPivot;
+    //private Transform t;
+    private GameObject _lever;
+    private GameObject _doorPivot;
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grab;
     private OpenDoorScript _doorScript;
     // For synch.
@@ -15,11 +15,15 @@ public class PullLeverScript : MonoBehaviour
 
     private void Start()
     {
-        doorPivot = GameObject.Find("DoorPivot");
+        // Get the DoorPivot
+        _doorPivot = GameObject.Find("DoorPivot");
+
+        // Add listener on the XRGrabInteractable of the lever 
         _grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         _grab.selectEntered.AddListener(XRGrabInteractable_Activated);
 
-        _doorScript = doorPivot.GetComponent<OpenDoorScript>();
+        // Get door script
+        _doorScript = _doorPivot.GetComponent<OpenDoorScript>();
 
         // Get context
         context = NetworkScene.Register(this);
@@ -34,32 +38,39 @@ public class PullLeverScript : MonoBehaviour
         }
     }
 
+    // When the lever is grabbed it calls the function PullLeverDown
     private void XRGrabInteractable_Activated(SelectEnterEventArgs eventArgs)
     {
         PullLeverDown();
     }
 
+    // This function calls the funtion to open the door and pulls the lever down
     private void PullLeverDown()
     {
+        // Pull leevr down
         transform.Rotate(160f, 0f, 0f, Space.Self);
 
+        // Disable the grab of the lever (door can be opened once) 
         if (_grab != null)
         {
             _grab.enabled = false;
         }
 
-        if (doorPivot != null)
+        if (_doorPivot != null)
         {
-
             if (_doorScript != null)
             {
+                // Call the function in the _doorScript to open the door
                 _doorScript.OpenDoor();
             }
         }
+
+        // Synch for other players
         SendTrackLeverMessage();
     }
     
-     private struct TrackLever
+    // Struct to track lever grab
+    private struct TrackLever
     {
         public bool grabEnabled;
     }
@@ -72,7 +83,7 @@ public class PullLeverScript : MonoBehaviour
         context.SendJson(message);
     }
 
-    // Process message to track lever
+    // Process message to track lever and door
     public void ProcessMessage(ReferenceCountedSceneGraphMessage message)
     {
         var m = message.FromJson<TrackLever>();

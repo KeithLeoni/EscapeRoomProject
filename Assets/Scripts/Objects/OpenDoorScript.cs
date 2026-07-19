@@ -6,16 +6,15 @@ using Ubiq.Messaging;
 
 public class OpenDoorScript : MonoBehaviour
 {
+    public AudioSource doorAudioSource;
+    
     private GameObject _lever;
     private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grab;
-    public AudioSource doorAudioSource;
     private CatSpeech _catSpeechScript;
     
 
     private void Start()
     {
-        // _grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        // _grab.selectEntered.AddListener(XRGrabInteractable_Activated);
         doorAudioSource = GetComponent<AudioSource>();
         Debug.Log(doorAudioSource);
 
