@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class MagicQuill : MonoBehaviour
 {
-    // Potion ingredients
     public GameObject magicInkTipPrefab;
     public AudioClip collisionSound; 
 

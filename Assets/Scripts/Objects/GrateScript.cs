@@ -4,35 +4,38 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class GrateScript : MonoBehaviour
 {
-    private GameObject grate;
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grab;
+    private GameObject _grate;
+    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grab;
     private void Start()
-    {
-        grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        grab.selectEntered.AddListener(XRGrabInteractable_Activated);
+    {   
+        // Get XRGrabInteractable comonentand add a listener 
+        _grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        _grab.selectEntered.AddListener(XRGrabInteractable_Activated);
     }
 
     private void OnDestroy()
     {
-        grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        if (grab != null)
+        _grab = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        if (_grab != null)
         {
-            grab.selectEntered.RemoveListener(XRGrabInteractable_Activated);
+            _grab.selectEntered.RemoveListener(XRGrabInteractable_Activated);
         }
     }
 
+    // Open grate on grab, used for testing the grate opening during development
     private void XRGrabInteractable_Activated(SelectEnterEventArgs eventArgs)
     {
         OpenGrate();
     }
 
+    // Funtion to open the grate
     public void OpenGrate()
     {
         transform.Rotate(90f, 0f, 0f, Space.Self);
 
-        if (grab != null)
+        if (_grab != null)
         {
-            grab.enabled = false;
+            _grab.enabled = false;
         }
     }
 
