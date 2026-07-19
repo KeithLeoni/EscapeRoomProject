@@ -42,7 +42,6 @@ public class StoryBook : MonoBehaviour
         _avatarManager = FindFirstObjectByType<AvatarManager>();
         _powerSelection = FindFirstObjectByType<PowerSelection>();
 
-
         _catSpeechScript = FindFirstObjectByType<CatSpeech>();
         // Find all movable furniture
         _movableFurniture.AddRange(FindObjectsByType<StrengthOnlyGrabPermission>(FindObjectsSortMode.None));
