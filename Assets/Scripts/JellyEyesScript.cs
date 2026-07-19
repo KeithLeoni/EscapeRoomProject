@@ -37,11 +37,13 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
         _localCamera = Camera.main;
         if (_localCamera == null) _localCamera = GetComponentInChildren<Camera>();
 
+        // Get layers
         _traceLayerIndex = LayerMask.NameToLayer("JellyTraces");
 
-        // Hide traces by default on startup for your local camera view
+        // Hide traces by default on startup for local camera
         if (_traceLayerIndex != -1 && _localCamera != null)
         {
+            // Hide traces
             _localCamera.cullingMask &= ~(1 << _traceLayerIndex);
         }
     }
@@ -52,8 +54,10 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
             triggerAction.action.WasPressedThisFrame())
         {
             _activationStatus = !_activationStatus;
+
             // Activate power
             ForceToggleLocalTraces(_activationStatus);
+            
             // Update graphics (i.e. eyes) of remote copies
             if (_graphicsSynchronizer != null)
             {
@@ -77,11 +81,11 @@ public class JellyEyesScript : MonoBehaviour, GraphicsController
         {
             if (state)
             {
-                _localCamera.cullingMask |= (1 << _traceLayerIndex); // Open your eyes layer view
+                _localCamera.cullingMask |= (1 << _traceLayerIndex); // See traces (OR, make bit = 1)
             }
             else
             {
-                _localCamera.cullingMask &= ~(1 << _traceLayerIndex); // Close your eyes layer view
+                _localCamera.cullingMask &= ~(1 << _traceLayerIndex); // Hide traces
             }
 
             Debug.Log($"[Traces System] Privately adjusted traces visibility to: {state}");

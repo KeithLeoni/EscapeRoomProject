@@ -2,6 +2,11 @@ using Ubiq.Avatars;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
+/// <summary>
+/// Component to toggle grab interaction for objects that can be only
+/// moved by avatar with size manipulation powers (specifically only
+/// when the avatar has grown in size wrt to normal avatars)
+/// </summary>
 public class StrengthOnlyGrabPermission : MonoBehaviour
 {
     public ScenePowerManager powerManager;
@@ -50,7 +55,7 @@ public class StrengthOnlyGrabPermission : MonoBehaviour
         }
         else
         {
-            grabInteractable.enabled = false;            
+            grabInteractable.enabled = false;
         }
     }
 

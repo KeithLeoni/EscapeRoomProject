@@ -138,14 +138,8 @@ public class MusicSequencePuzzleManager : MonoBehaviour
     private void FailPuzzle()
     {
         currentStep = 0;
-        //sampleFinished = false;
 
-        // if (audioSource != null && failSound != null)
-        //     audioSource.PlayOneShot(failSound);
-
-        Debug.Log("Wrong order. Reset.");
-
-        _catSpeechScript.Say("NO! That’s not it!", 2);
+        _catSpeechScript.SayLocal("NO! That’s not it!", 2);
     }
 
     private void SolvePuzzle()
@@ -158,18 +152,11 @@ public class MusicSequencePuzzleManager : MonoBehaviour
         if (objectToEnableGrab != null)
             objectToEnableGrab.enabled = true;
 
-        /*
-        if (objectRigidbody != null)
-        {
-            objectRigidbody.isKinematic = false;
-            objectRigidbody.WakeUp();
-        }*/
-
         if (objectCollider != null)
             objectCollider.enabled = true;
 
         Debug.Log("Music puzzle solved. Object is now grabbable.");
 
-        _catSpeechScript.Say("Yes! Thank you, that was amazing! You can find the key under the other chair.", 1);
+        _catSpeechScript.SayLocal("Yes! Thank you, that was amazing! You can find the key under the other chair.", 1);
     }
 }

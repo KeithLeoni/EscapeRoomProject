@@ -25,14 +25,18 @@ public class BackgroundMusic : MonoBehaviour
             // Stop music
             audioSource.Stop();
 
+            audioSource.loop = true;
+
             // Switch music for different scenarios
             if (mainRoom)
             {
-                audioSource.PlayOneShot(tensionMusic);
+                audioSource.clip = tensionMusic;
+                audioSource.Play();
             }
             else
             {
-                audioSource.PlayOneShot(initialMusic);
+                audioSource.clip = initialMusic;
+                audioSource.Play();
             }
         }
     }

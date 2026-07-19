@@ -25,6 +25,7 @@ public class StoryBook : MonoBehaviour
     private List<string> _setOrderAvatars = new List<string>();
     private List<ScenePowerManager.Power> _setOrderPowers = new List<ScenePowerManager.Power>();
     private AvatarManager _avatarManager;
+    private CatSpeech _catSpeechScript;
 
     // Teleport
     private NetworkContext _context;
@@ -41,6 +42,8 @@ public class StoryBook : MonoBehaviour
         _avatarManager = FindFirstObjectByType<AvatarManager>();
         _powerSelection = FindFirstObjectByType<PowerSelection>();
 
+
+        _catSpeechScript = FindFirstObjectByType<CatSpeech>();
         // Find all movable furniture
         _movableFurniture.AddRange(FindObjectsByType<StrengthOnlyGrabPermission>(FindObjectsSortMode.None));
     }
@@ -126,6 +129,8 @@ public class StoryBook : MonoBehaviour
         {
             item.UpdateLocalSizeController();
         }
+        _catSpeechScript.SayLocal("What?! Who are you?! What are you doing here kids?! You need to leave before he comes back! How? I don’t know! What were you doing? How did you come here? Well, there is not time to lose, maybe you can find some clues on how to go back looking around… This day suddenly became interesting…", 0);
+
     }
 
     /// <summary>
