@@ -47,6 +47,7 @@ public class ChestTriggerDialogue : MonoBehaviour
 
             // Activate the music puzzle now that the players have the correct NPC instructions
             _musicScript.activateMusicPuzzle = true;
+            SendActivateMusicPuzzleMessage();
 
         }
     }
