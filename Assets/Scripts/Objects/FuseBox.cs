@@ -102,7 +102,8 @@ public class FuseBox : MonoBehaviour
         {
             // Open Grate
             grateDoor.GetComponent<AudioSource>().PlayOneShot(gateSoundEffect);
-            grateDoor.GetComponent<Animator>().Play("OpenGate");
+            grateDoor.GetComponent<Animator>().enabled = true;
+            //grateDoor.GetComponent<Animator>().Play("OpenGate");
             // Change indicator colors
             Material[] materials = _indicatorMeshRenderer.materials;
             materials[1] = colorOn;

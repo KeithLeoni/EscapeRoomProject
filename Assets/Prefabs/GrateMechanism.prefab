@@ -329,6 +329,7 @@ MonoBehaviour:
   colorOn: {fileID: 2100000, guid: e391ed310297c154eb65809db00fcc36, type: 2}
   colorOff: {fileID: 2100000, guid: b3ec40afe60a91d4ba33de0215b28d75, type: 2}
   grateDoor: {fileID: 0}
+  gateSoundEffect: {fileID: 0}
 --- !u!1 &1315387362816474732
 GameObject:
   m_ObjectHideFlags: 0
@@ -455,7 +456,6 @@ GameObject:
   - component: {fileID: 4062426184234332806}
   - component: {fileID: 2098298815444765887}
   - component: {fileID: 8822612512465385183}
-  - component: {fileID: 1486704005292504053}
   m_Layer: 0
   m_Name: 'FuelNearFull '
   m_TagString: Untagged
@@ -625,7 +625,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 1
-  m_RetainTransformParent: 1
+  m_RetainTransformParent: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
@@ -643,19 +643,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabbableElement
   grabInteractable: {fileID: 0}
-  socketElement: {fileID: 310807045541995558}
---- !u!114 &1486704005292504053
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1514049025476375518}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b7c9f07d6c194846901d1795dcbd030, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlineVialFix
 --- !u!1 &1635970993082078279
 GameObject:
   m_ObjectHideFlags: 0
@@ -1084,7 +1071,6 @@ GameObject:
   - component: {fileID: 3410279798892177070}
   - component: {fileID: 3553979482494099331}
   - component: {fileID: 4867272128892323135}
-  - component: {fileID: 4040992831597041495}
   m_Layer: 0
   m_Name: FuelFull
   m_TagString: Untagged
@@ -1254,7 +1240,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 1
-  m_RetainTransformParent: 1
+  m_RetainTransformParent: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
@@ -1272,19 +1258,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabbableElement
   grabInteractable: {fileID: 0}
-  socketElement: {fileID: 5433827983776561098}
---- !u!114 &4040992831597041495
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3579877351819218409}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b7c9f07d6c194846901d1795dcbd030, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlineVialFix
 --- !u!1 &3702247668601000407
 GameObject:
   m_ObjectHideFlags: 0
@@ -1297,7 +1270,6 @@ GameObject:
   - component: {fileID: 931838900318946153}
   - component: {fileID: 9169629054287995855}
   - component: {fileID: 4507469113617501813}
-  - component: {fileID: 1047607086378230429}
   m_Layer: 0
   m_Name: FuelEmpty
   m_TagString: Untagged
@@ -1466,7 +1438,7 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 1
-  m_RetainTransformParent: 1
+  m_RetainTransformParent: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
@@ -1484,19 +1456,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabbableElement
   grabInteractable: {fileID: 0}
-  socketElement: {fileID: 8118855544345942749}
---- !u!114 &1047607086378230429
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3702247668601000407}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b7c9f07d6c194846901d1795dcbd030, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlineVialFix
 --- !u!1 &3939975294489821583
 GameObject:
   m_ObjectHideFlags: 0
@@ -3288,7 +3247,6 @@ GameObject:
   - component: {fileID: 4882980446379537624}
   - component: {fileID: 873642808418588955}
   - component: {fileID: 3847523085514084380}
-  - component: {fileID: 805908477472423042}
   - component: {fileID: 1544633227624083325}
   m_Layer: 0
   m_Name: FuelHalfWay
@@ -3459,23 +3417,11 @@ MonoBehaviour:
   m_ThrowVelocityScale: 1.5
   m_ThrowAngularVelocityScale: 1
   m_ForceGravityOnDetach: 1
-  m_RetainTransformParent: 1
+  m_RetainTransformParent: 0
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 0
---- !u!114 &805908477472423042
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9157661275361112890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b7c9f07d6c194846901d1795dcbd030, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OutlineVialFix
 --- !u!114 &1544633227624083325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3489,7 +3435,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabbableElement
   grabInteractable: {fileID: 0}
-  socketElement: {fileID: 7867398352884034806}
 --- !u!1001 &176124426207606171
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3542,6 +3487,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: FuelHolder2
       objectReference: {fileID: 0}
+    - target: {fileID: 5006488746817932006, guid: 2085a997ef3bf4b4681576bfb2c8a877, type: 3}
+      propertyPath: m_StartingSelectFilters.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5006488746817932006, guid: 2085a997ef3bf4b4681576bfb2c8a877, type: 3}
+      propertyPath: 'm_StartingSelectFilters.Array.data[0]'
+      value: 
+      objectReference: {fileID: 7867398352884034806}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3615,6 +3568,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: FuelHolder4
       objectReference: {fileID: 0}
+    - target: {fileID: 5006488746817932006, guid: 2085a997ef3bf4b4681576bfb2c8a877, type: 3}
+      propertyPath: m_StartingSelectFilters.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5006488746817932006, guid: 2085a997ef3bf4b4681576bfb2c8a877, type: 3}
+      propertyPath: 'm_StartingSelectFilters.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8118855544345942749}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3688,6 +3649,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: FuelHolder3
       objectReference: {fileID: 0}
+    - target: {fileID: 5006488746817932006, guid: 2085a997ef3bf4b4681576bfb2c8a877, type: 3}
+      propertyPath: m_StartingSelectFilters.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5006488746817932006, guid: 2085a997ef3bf4b4681576bfb2c8a877, type: 3}
+      propertyPath: 'm_StartingSelectFilters.Array.data[0]'
+      value: 
+      objectReference: {fileID: 5433827983776561098}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3761,6 +3730,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: FuelHolder1
       objectReference: {fileID: 0}
+    - target: {fileID: 5006488746817932006, guid: 2085a997ef3bf4b4681576bfb2c8a877, type: 3}
+      propertyPath: m_StartingSelectFilters.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5006488746817932006, guid: 2085a997ef3bf4b4681576bfb2c8a877, type: 3}
+      propertyPath: 'm_StartingSelectFilters.Array.data[0]'
+      value: 
+      objectReference: {fileID: 310807045541995558}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

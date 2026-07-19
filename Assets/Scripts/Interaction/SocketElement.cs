@@ -1,22 +1,20 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Filtering;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 /// <summary>
-/// This component <see langword="is"/> used <see langword="for"/> socket snap interaction.
-/// It includes outline tracking.  
+/// This component controls snap socket highlighting  
 /// </summary>
-public class SocketElement : MonoBehaviour
+public class SocketElement : MonoBehaviour, IXRSelectFilter
 {
-    // Input method to call once snap interaction happens
-    [Tooltip("Method to call when socket snap is triggered.")]
-    public UnityEvent onSocketSnap;
-    // Override Grab tracking behaviour for room synchronization
-    public SocketStatusTracker socketTracker;
     // Enable/Disable outline
     private Outline _outlineComponent;
     private XRSocketInteractor _socketInteractor;
+    // Tracks if object is currently selected by socket
+    private bool _isSelected = false;
 
     void Start()
     {
@@ -34,15 +32,18 @@ public class SocketElement : MonoBehaviour
             _socketInteractor.hoverEntered.AddListener(EnableHighlight);
             _socketInteractor.hoverExited.AddListener(DisableHighlight);
             _socketInteractor.selectEntered.AddListener(OnSnap);
-            _socketInteractor.selectExited.AddListener(OnDeselect);
-            // Add socket tracker status
-            socketTracker = gameObject.AddComponent<SocketStatusTracker>();
+            _socketInteractor.selectExited.AddListener(OnSelectExit);
         }
 
     }
 
     public void EnableHighlight(HoverEnterEventArgs args)
     {
+        if (_isSelected)
+        {
+            // Do not highlight socket
+            return;
+        }
         _outlineComponent.enabled = true;
     }
 
@@ -52,24 +53,34 @@ public class SocketElement : MonoBehaviour
     }
 
     /// <summary>
-    /// When objects enter snapping zone (i.e are selected) <see langword="this"/> function
-    /// updates socket status <see langword="and"/> optionally calls the given onSocketSnap method  
+    /// When objects enter snapping zone (i.e are selected) this function
+    /// disables outline 
     /// </summary>
     public void OnSnap(SelectEnterEventArgs args)
     {
-        // Update socket tracker
-        socketTracker.SetSocketStatus(true);
-        // Disable socket
-        _socketInteractor.hoverEntered.RemoveAllListeners();
-        _socketInteractor.hoverExited.RemoveAllListeners();
+        // Disable socket outline
         _outlineComponent.enabled = false;
-        onSocketSnap?.Invoke();
+        _isSelected = true;
     }
 
-    public void OnDeselect(SelectExitEventArgs args)
+    public void OnSelectExit(SelectExitEventArgs args)
     {
-        // Update socket tracker
-        socketTracker.SetSocketStatus(false);
+        // Update selected status
+        _isSelected = false;
     }
 
+    // Socket Filter: 
+    // If Object it is interacting with:
+    // - is not being carried by local avatar
+    // - is not released
+    // reject interaction (objects should snap only when remote avatar releases item)
+    public bool Process(IXRSelectInteractor interactor, IXRSelectInteractable interactable)
+    {
+        // Check interactable
+        GrabbableElement grabbableElement = interactable.transform.gameObject.GetComponent<GrabbableElement>();
+        
+        return grabbableElement == null || (!grabbableElement.firstMessageArrived);
+    }
+
+    public bool canProcess => isActiveAndEnabled;
 }

@@ -166,6 +166,11 @@ public class SizeController : MonoBehaviour, GraphicsController
 
     private void OnDestroy()
     {
+        if (!isLocal)
+        {
+            return;
+        }
+        
         if (growAction.action != null)
             growAction.action.Disable();
 

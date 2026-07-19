@@ -3,10 +3,6 @@ using UnityEngine.InputSystem;
 
 public class SizeManipulationProvider : MonoBehaviour
 {
-
-    [Header("Input")]
-    public InputActionProperty growAction;
-    public InputActionProperty shrinkAction;
     private Transform xrOrigin;
     private SizeController _controller;
 

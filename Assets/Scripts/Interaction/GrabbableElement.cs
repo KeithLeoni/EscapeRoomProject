@@ -23,6 +23,9 @@ public class GrabbableElement : MonoBehaviour
     // For more adaptability, check what is the original enable status of the grabbable object 
     // & record it to reest status after grab release
     private bool _defaultGrabbableStatus;
+    // Keep track of when user received first grab enter tracking message
+    [System.NonSerialized]
+    public bool firstMessageArrived = false;
 
     void Start()
     {
@@ -78,6 +81,7 @@ public class GrabbableElement : MonoBehaviour
                     owner = false;
                     _waitForFall = false;
                     _prevPosition = new Vector3(0, -100, 0);
+                    Debug.Log("Release");
                     SendReleaseMessage();
                 }
             }
@@ -155,6 +159,8 @@ public class GrabbableElement : MonoBehaviour
         var message = new TrackGrabMsg();
         message.position = transform.position;
         message.rotation = transform.rotation;
+        //message.position = transform.localPosition;
+        //message.rotation = transform.localRotation;
         message.release = true;
         context.SendJson(message);
     }
@@ -167,26 +173,36 @@ public class GrabbableElement : MonoBehaviour
 
         if (!m.release)
         {
-            // Someone grabbed object
-            owner = false;
-            // Store Grabbable component status before starting to track
-            _defaultGrabbableStatus = grabInteractable.enabled;
-            // Disable Grabbable component
-            if (grabInteractable.enabled)
+            // Things to do only once
+            if (!firstMessageArrived)
             {
-                grabInteractable.enabled = false;
+                // Someone grabbed object
+                owner = false;
+                // Store Grabbable component status before starting to track
+                _defaultGrabbableStatus = grabInteractable.enabled;
+                // Disable Grabbable component
+                if (grabInteractable.enabled)
+                {
+                    grabInteractable.enabled = false;
+                }
                 // Make rigidbody kinematic
                 GetComponent<Rigidbody>().isKinematic = true;
+                firstMessageArrived = true;
             }
             // Keep tracking position & rotation
+            // For testing in loopback
             gameObject.transform.position = m.position;
             gameObject.transform.rotation = m.rotation;
+            //gameObject.transform.localPosition = m.position;
+            //gameObject.transform.localRotation = m.rotation;
         }
         else
         {
             // Release grab: reset to previous state
             GetComponent<Rigidbody>().isKinematic = false;
             grabInteractable.enabled = _defaultGrabbableStatus;
+            // Reset
+            firstMessageArrived = false;
         }
     }
 }

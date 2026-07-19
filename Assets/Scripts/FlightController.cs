@@ -8,10 +8,12 @@ public class FlightController : MonoBehaviour
 {
     public GameObject flyPrefab;
     private GameObject _flyObject;
+    private bool _isLocal;
 
     private void Start()
     {
-        if (!gameObject.GetComponent<Ubiq.Avatars.Avatar>().IsLocal)
+        _isLocal = gameObject.GetComponent<Ubiq.Avatars.Avatar>().IsLocal;
+        if (!_isLocal)
         {
             return;
         }
@@ -26,6 +28,10 @@ public class FlightController : MonoBehaviour
     // Remove Flying Object
     private void OnDestroy()
     { 
+        if (!_isLocal)
+        {
+            return;
+        }
         Destroy(_flyObject);
     }
 

@@ -48,6 +48,10 @@ public class StrengthOnlyGrabPermission : MonoBehaviour
         {
             grabInteractable.enabled = true;
         }
+        else
+        {
+            grabInteractable.enabled = false;            
+        }
     }
 
     /// <summary>
