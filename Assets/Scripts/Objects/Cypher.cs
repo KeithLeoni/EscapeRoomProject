@@ -17,8 +17,6 @@ public class Cypher : MonoBehaviour
     [System.NonSerialized]
     public bool owner = false;                      // are you currently grabbing/interacting with the object
     private NetworkContext _context;
-    // only track state while grabbing
-    private int _prevSector = 0;
 
     // Script to handle cat dialogue
     private CatSpeech _catSpeechScript;

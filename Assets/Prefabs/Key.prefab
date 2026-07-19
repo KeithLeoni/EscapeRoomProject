@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2673968235531303189}
   - component: {fileID: 2169348768945806368}
   - component: {fileID: 6173839500065137697}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Key
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -278,4 +278,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrabbableElement
   grabInteractable: {fileID: 0}
-  socketElement: {fileID: 0}

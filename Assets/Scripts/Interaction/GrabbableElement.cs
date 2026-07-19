@@ -132,7 +132,13 @@ public class GrabbableElement : MonoBehaviour
     /// When object is released, keep tracking as long as the tracked object is still falling  
     /// </summary>
     private void OnDeselect(SelectExitEventArgs args)
-    {
+    {        
+        // Skip if it is caused by socket snap
+        if (args.interactorObject.transform.gameObject.GetComponent<NearFarInteractor>() == null)
+        {
+            // Not a user-caused interaction
+            return;
+        }
         _waitForFall = true;
     }
 

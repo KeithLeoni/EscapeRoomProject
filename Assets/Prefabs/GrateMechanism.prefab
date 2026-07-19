@@ -229,6 +229,7 @@ GameObject:
   - component: {fileID: 9123695665773204287}
   - component: {fileID: 5744160817843904211}
   - component: {fileID: 7586060773799729960}
+  - component: {fileID: 7972509970212621177}
   m_Layer: 0
   m_Name: Case
   m_TagString: Untagged
@@ -329,7 +330,29 @@ MonoBehaviour:
   colorOn: {fileID: 2100000, guid: e391ed310297c154eb65809db00fcc36, type: 2}
   colorOff: {fileID: 2100000, guid: b3ec40afe60a91d4ba33de0215b28d75, type: 2}
   grateDoor: {fileID: 0}
-  gateSoundEffect: {fileID: 0}
+  gateSoundEffect: {fileID: 8300000, guid: d238ed5cb4c396149ba2420a12fabdf2, type: 3}
+--- !u!64 &7972509970212621177
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178999606115589278}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4511611206647714592, guid: 5a05c65989fd99d41aee21f6876c0110, type: 3}
 --- !u!1 &1315387362816474732
 GameObject:
   m_ObjectHideFlags: 0
