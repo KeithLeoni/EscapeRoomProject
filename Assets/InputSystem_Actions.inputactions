@@ -104,6 +104,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "BackwardsCypher",
+                    "type": "Button",
+                    "id": "93f445f6-d47b-4e58-96e5-c61b6df4fde1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ForwardCypher",
+                    "type": "Button",
+                    "id": "b61fa705-b398-45c3-b351-9070cf01ceca",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -505,12 +523,34 @@
                 },
                 {
                     "name": "",
+                    "id": "c5985d74-8353-4af7-9bf3-fcaa5143f4a2",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "BackwardsCypher",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "d46914f0-0b30-41bc-8227-61e7b2025fa9",
                     "path": "<XRController>{LeftHand}/secondaryButton",
                     "interactions": "Hold",
                     "processors": "",
                     "groups": ";XR",
                     "action": "FlyUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "150a97a5-0a22-4fb8-82bb-61c974a9e279",
+                    "path": "<XRController>{RightHand}/secondaryButton",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "ForwardCypher",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

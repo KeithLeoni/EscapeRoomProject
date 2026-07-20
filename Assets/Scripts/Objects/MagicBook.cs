@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.XR.CoreUtils;
 using Ubiq.Avatars;
+using TMPro;
 
 public class MagicBook : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class MagicBook : MonoBehaviour
     
     private bool _escaped = false;
     private AudioSource _audioSource;
+    public TextMeshPro textToUpdate;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -51,7 +53,8 @@ public class MagicBook : MonoBehaviour
             xrOrigin.transform.rotation = dest.rotation;
 
             // Re-activate the CharacterController
-            if(cc != null) cc.enabled = true;
+            if (cc != null) cc.enabled = true;
+            textToUpdate.text = "YOU ESCAPED!";
                
         }
     }

@@ -111,7 +111,8 @@ public class StoryBook : MonoBehaviour
 
     private void Teleport()
     {
-        // TODO
+        // testing
+        //_finalChoice = ScenePowerManager.Power.sizeManipulationPower;
         // Set local power in power manager
         _powerManager.SetPlayerPower(_finalChoice);
         XROrigin xrOrigin = GameObject.FindFirstObjectByType<XROrigin>();
@@ -124,12 +125,20 @@ public class StoryBook : MonoBehaviour
         if (_characterController != null) _characterController.enabled = true;
 
         // Change movable furniture status if needed
+        if (_finalChoice == ScenePowerManager.Power.sizeManipulationPower)
+        {
+            Invoke(nameof(ActivateFurniture), 0.5f);
+        }
+        _catSpeechScript.SayLocal("What?! Who are you?! What are you doing here kids?! You need to leave before he comes back! How? I don’t know! What were you doing? How did you come here? Well, there is not time to lose, maybe you can find some clues on how to go back looking around… This day suddenly became interesting…", 0);
+
+    }
+
+    private void ActivateFurniture()
+    {
         foreach (var item in _movableFurniture)
         {
             item.UpdateLocalSizeController();
         }
-        _catSpeechScript.SayLocal("What?! Who are you?! What are you doing here kids?! You need to leave before he comes back! How? I don’t know! What were you doing? How did you come here? Well, there is not time to lose, maybe you can find some clues on how to go back looking around… This day suddenly became interesting…", 0);
-
     }
 
     /// <summary>

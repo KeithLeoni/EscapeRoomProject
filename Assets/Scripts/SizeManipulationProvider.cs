@@ -25,10 +25,10 @@ public class SizeManipulationProvider : MonoBehaviour
         }
 
         // Only change target when previous one has been reached
-        if (_controller.HasReachedGoal())
+        /*if (_controller.HasReachedGoal())
         {
             return;
-        }
+        }*/
 
         xrOrigin.localScale = _controller.GetAvatarScale();
 

@@ -40,7 +40,7 @@ public class CauldronScript : MonoBehaviour
                 _potionRed = true;
                 Destroy(col.gameObject);
             }
-        else if(col.gameObject.name.Contains("IvyLeaf")) // Any leaf works
+        else if(col.gameObject.name.Contains("Ivy")) // Any leaf works
             {
                 _ivyLeaf = true;
                 Destroy(col.gameObject);

@@ -10,6 +10,7 @@ public class Chest : MonoBehaviour
     // It is an interactable component, that interacts with key to open
     private GameObject _lockObject;
     private GameObject _chestLidObject;
+    public GameObject _cypherObject;
     // Chest opening variables
     private Vector3 _rotationPoint;
     private Quaternion _finalRotationTarget;
@@ -98,6 +99,7 @@ public class Chest : MonoBehaviour
         while (!keyGrabTracker.owner && !keyGrabTracker.grabInteractable.enabled)
         {
         }
+        _cypherObject.GetComponent<XRGrabInteractable>().enabled = true;
 
         Invoke(nameof(KeyFall), 0.5f);
         // Activate mesh collider and deactivate sphere collider

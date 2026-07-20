@@ -80,6 +80,6 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 4856880945478664445, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  forwardSpeed: 3
+  forwardSpeed: 1.5
   verticalSpeed: 2.5
   strafeSpeed: 2

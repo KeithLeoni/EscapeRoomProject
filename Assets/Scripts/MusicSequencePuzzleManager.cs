@@ -44,9 +44,6 @@ public class MusicSequencePuzzleManager : MonoBehaviour
         if (objectToEnableGrab != null)
             objectToEnableGrab.enabled = false;
 
-        if (objectRigidbody != null)
-            objectRigidbody.isKinematic = true;
-
         if (objectCollider != null)
             objectCollider.enabled = true;
         
