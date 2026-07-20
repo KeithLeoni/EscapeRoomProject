@@ -165,8 +165,6 @@ public class GrabbableElement : MonoBehaviour
         var message = new TrackGrabMsg();
         message.position = transform.position;
         message.rotation = transform.rotation;
-        //message.position = transform.localPosition;
-        //message.rotation = transform.localRotation;
         message.release = true;
         context.SendJson(message);
     }
@@ -199,8 +197,6 @@ public class GrabbableElement : MonoBehaviour
             // For testing in loopback
             gameObject.transform.position = m.position;
             gameObject.transform.rotation = m.rotation;
-            //gameObject.transform.localPosition = m.position;
-            //gameObject.transform.localRotation = m.rotation;
         }
         else
         {
