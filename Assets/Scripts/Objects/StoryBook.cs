@@ -111,8 +111,6 @@ public class StoryBook : MonoBehaviour
 
     private void Teleport()
     {
-        // testing
-        //_finalChoice = ScenePowerManager.Power.sizeManipulationPower;
         // Set local power in power manager
         _powerManager.SetPlayerPower(_finalChoice);
         XROrigin xrOrigin = GameObject.FindFirstObjectByType<XROrigin>();
